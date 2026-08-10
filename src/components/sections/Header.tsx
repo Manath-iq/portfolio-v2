@@ -34,7 +34,7 @@ export function Header() {
       >
         <a href="#top" className="flex shrink-0 items-center gap-2.5" aria-label="Наверх">
           <Monogram className="size-6" />
-          <span className="text-[0.9375rem] font-medium tracking-[-0.01em]">{SITE.name}</span>
+          <span className="text-[0.9375rem] font-medium tracking-[-0.01em]">{SITE.brand}</span>
         </a>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Разделы страницы">

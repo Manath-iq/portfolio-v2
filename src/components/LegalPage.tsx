@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { Monogram } from '@/components/Monogram'
 import { SITE } from '@/data/site'
 import { Footer } from '@/components/sections/Footer'
+import { asset } from '@/lib/asset'
 
 /** Общая обёртка юридических страниц: узкая колонка, без эффектов. */
 export function LegalPage({
@@ -17,12 +18,12 @@ export function LegalPage({
     <>
       <div className="pointer-events-none sticky top-0 z-50 flex justify-center px-[var(--gutter)] pt-4">
         <a
-          href="/"
+          href={asset("/")}
           className="glass-hover pointer-events-auto flex items-center gap-2.5 rounded-[var(--r-pill)] border border-hairline bg-[var(--surface)] py-2.5 pr-5 pl-4 backdrop-blur-2xl"
         >
           <ArrowLeft size={16} strokeWidth={1.5} aria-hidden />
           <Monogram className="size-5" />
-          <span className="text-[0.9375rem] font-medium">{SITE.name}</span>
+          <span className="text-[0.9375rem] font-medium">{SITE.brand}</span>
         </a>
       </div>
 

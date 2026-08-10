@@ -7,10 +7,17 @@ import { SITE } from '@/data/site'
 import { W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { goal } from '@/lib/metrika'
+import { asset } from '@/lib/asset'
 
 type State = 'idle' | 'sending' | 'success' | 'error'
 
-const ENDPOINT = '/api/lead.php'
+/**
+ * На боевом хостинге рядом со статикой лежит PHP-приёмник. На GitHub Pages
+ * PHP нет вообще, поэтому там переменная выставляется в пустую строку —
+ * и форма честно уступает место Telegram вместо кнопки, которая всегда падает.
+ */
+const ENDPOINT = process.env.NEXT_PUBLIC_LEAD_ENDPOINT ?? '/api/lead.php'
+const LIVE = ENDPOINT !== ''
 
 export function LeadForm() {
   const [state, setState] = useState<State>('idle')
@@ -168,7 +175,7 @@ export function LeadForm() {
                     />
                     <span>
                       Согласен на обработку персональных данных согласно{' '}
-                      <a href="/policy/" className="text-text underline underline-offset-4">
+                      <a href={asset("/policy/")} className="text-text underline underline-offset-4">
                         политике конфиденциальности
                       </a>
                     </span>
@@ -181,16 +188,37 @@ export function LeadForm() {
                   ) : null}
 
                   <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-3">
-                    <button type="submit" className="btn btn-accent" disabled={state === 'sending'}>
-                      {state === 'sending' ? (
-                        <>
-                          <Loader2 size={16} strokeWidth={1.5} className="animate-spin" aria-hidden />
-                          Отправляю
-                        </>
-                      ) : (
-                        'Отправить'
-                      )}
-                    </button>
+                    {LIVE ? (
+                      <button
+                        type="submit"
+                        className="btn btn-accent"
+                        disabled={state === 'sending'}
+                      >
+                        {state === 'sending' ? (
+                          <>
+                            <Loader2
+                              size={16}
+                              strokeWidth={1.5}
+                              className="animate-spin"
+                              aria-hidden
+                            />
+                            Отправляю
+                          </>
+                        ) : (
+                          'Отправить'
+                        )}
+                      </button>
+                    ) : (
+                      <a
+                        href={SITE.telegram}
+                        target="_blank"
+                        rel="noopener"
+                        onClick={() => goal('tg_click')}
+                        className="btn btn-accent"
+                      >
+                        Написать в Telegram
+                      </a>
+                    )}
 
                     <p className="t-micro">
                       Или сразу —{' '}
@@ -220,6 +248,14 @@ export function LeadForm() {
                         {SITE.phone}
                       </a>
                     </p>
+
+                    {LIVE ? null : (
+                      <p className="t-micro basis-full leading-relaxed">
+                        это копия на GitHub Pages — там нет PHP, поэтому приёмник заявок
+                        не поднят. на боевом хостинге кнопка отправляет форму в Telegram,
+                        не перезагружая страницу.
+                      </p>
+                    )}
                   </div>
                 </form>
               </>

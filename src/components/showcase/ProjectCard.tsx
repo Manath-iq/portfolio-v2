@@ -3,6 +3,7 @@
 import { forwardRef } from 'react'
 import type { Project } from '@/data/projects'
 import { cn } from '@/lib/utils'
+import { asset } from '@/lib/asset'
 
 type Props = {
   project: Project
@@ -49,7 +50,7 @@ export const ProjectCard = forwardRef<HTMLDivElement, Props>(function ProjectCar
       >
         <div
           className="absolute inset-0 scale-110 bg-cover bg-top opacity-40 blur-md"
-          style={{ backgroundImage: `url(${project.poster})` }}
+          style={{ backgroundImage: `url(${asset(project.poster)})` }}
         />
         <div className="absolute inset-0 bg-black/55" />
         <div className="absolute inset-x-0 bottom-0 p-5">
@@ -78,7 +79,7 @@ export const ProjectCard = forwardRef<HTMLDivElement, Props>(function ProjectCar
       >
         {/* постер — основа кадра, видео приезжает поверх, когда начинает играть */}
         <img
-          src={project.poster}
+          src={asset(project.poster)}
           alt={project.alt}
           width={1600}
           height={1000}
@@ -101,8 +102,8 @@ export const ProjectCard = forwardRef<HTMLDivElement, Props>(function ProjectCar
               playVideo ? 'opacity-100' : 'opacity-0',
             )}
           >
-            <source src={project.video} type="video/webm" />
-            <source src={project.video.replace('.webm', '.mp4')} type="video/mp4" />
+            <source src={asset(project.video)} type="video/webm" />
+            <source src={asset(project.video.replace('.webm', '.mp4'))} type="video/mp4" />
           </video>
         ) : null}
 

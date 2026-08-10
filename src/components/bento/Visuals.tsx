@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { PAGESPEED } from '@/data/measurements'
 import { PROJECTS } from '@/data/projects'
 import { cn } from '@/lib/utils'
+import { asset } from '@/lib/asset'
 
 /** Запускает колбэк один раз, когда блок появился в кадре. */
 function useOnce<T extends HTMLElement>(cb: () => void) {
@@ -39,7 +40,7 @@ export function FanPreviews() {
       {picks.map((p, i) => (
         <img
           key={p.id}
-          src={p.poster}
+          src={asset(p.poster)}
           alt={p.alt}
           width={1600}
           height={1000}
@@ -182,7 +183,7 @@ export function ResponsiveCycle() {
           )}
         >
           <img
-            src={project.poster}
+            src={asset(project.poster)}
             alt={project.alt}
             width={1600}
             height={1000}
@@ -245,7 +246,7 @@ export function BeforeAfter({
         {/* ячейка низкая по спеке — держим высоту, а не пропорцию */}
         <div className="relative h-[clamp(170px,24vw,300px)] w-full">
           <img
-            src={after}
+            src={asset(after)}
             alt={afterAlt}
             width={1915}
             height={821}
@@ -257,7 +258,7 @@ export function BeforeAfter({
             style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
           >
             <img
-              src={before}
+              src={asset(before)}
               alt={beforeAlt}
               width={1915}
               height={821}

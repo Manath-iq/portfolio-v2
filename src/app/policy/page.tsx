@@ -3,7 +3,7 @@ import { H, LegalPage } from '@/components/LegalPage'
 import { SITE } from '@/data/site'
 
 export const metadata: Metadata = {
-  title: `Политика обработки персональных данных — ${SITE.name}`,
+  title: `Политика обработки персональных данных — ${SITE.brand}`,
   description:
     'Как обрабатываются персональные данные, отправленные через форму на сайте: состав, цели, срок хранения и порядок отзыва согласия.',
   robots: { index: false, follow: true },
@@ -22,8 +22,9 @@ export default function Policy() {
       <H>1. Оператор</H>
       <p>
         Оператором персональных данных является индивидуальный предприниматель{' '}
-        {SITE.name}, ИНН {SITE.inn}, {SITE.city}, {SITE.region}. Связаться с оператором
-        можно по телефону {SITE.phone}.
+        {SITE.name}
+        {SITE.inn ? `, ИНН ${SITE.inn}` : ''}, {SITE.city}, {SITE.region}. Связаться с
+        оператором можно по телефону {SITE.phone} или в Telegram.
       </p>
 
       <H>2. Какие данные обрабатываются</H>

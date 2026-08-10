@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import './fonts.css';
+
 
 /* ─────────────────────────────────────────────────────────────
    ТОКЕНЫ
@@ -106,7 +106,7 @@
     inset: 0;
     z-index: 9999;
     pointer-events: none;
-    background-image: url('/noise.png');
+    background-image: var(--noise);
     background-size: 128px 128px;
     opacity: 0.035;
     mix-blend-mode: overlay;

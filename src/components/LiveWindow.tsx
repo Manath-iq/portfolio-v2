@@ -5,6 +5,7 @@ import { HERO_PROJECTS } from '@/data/projects'
 import { BrowserFrame } from '@/components/mockups/BrowserFrame'
 import { goal } from '@/lib/metrika'
 import { cn } from '@/lib/utils'
+import { asset } from '@/lib/asset'
 
 const TYPE_MS = 220
 const FADE_MS = 260
@@ -150,7 +151,7 @@ export function LiveWindow() {
                   ref={(el) => {
                     videoRefs.current[i] = el
                   }}
-                  poster={p.poster}
+                  poster={asset(p.poster)}
                   muted
                   loop
                   playsInline
@@ -159,12 +160,12 @@ export function LiveWindow() {
                   height={720}
                   className="size-full object-cover object-top"
                 >
-                  <source src={p.video} type="video/webm" />
-                  <source src={p.video.replace('.webm', '.mp4')} type="video/mp4" />
+                  <source src={asset(p.video)} type="video/webm" />
+                  <source src={asset(p.video.replace('.webm', '.mp4'))} type="video/mp4" />
                 </video>
               ) : (
                 <img
-                  src={p.poster}
+                  src={asset(p.poster)}
                   alt={p.alt}
                   width={1600}
                   height={1000}

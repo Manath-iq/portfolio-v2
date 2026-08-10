@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { PROJECTS } from '@/data/projects'
+import { asset } from '@/lib/asset'
 
 type Feature = {
   id: string
@@ -99,7 +100,7 @@ function StickyVideo({ projectId }: { projectId: string }) {
         {p.video ? (
           <video
             ref={ref}
-            poster={p.poster}
+            poster={asset(p.poster)}
             muted
             loop
             playsInline
@@ -108,12 +109,12 @@ function StickyVideo({ projectId }: { projectId: string }) {
             height={720}
             className="aspect-[16/10] w-full object-cover object-top"
           >
-            <source src={p.video} type="video/webm" />
-            <source src={p.video.replace('.webm', '.mp4')} type="video/mp4" />
+            <source src={asset(p.video)} type="video/webm" />
+            <source src={asset(p.video.replace('.webm', '.mp4'))} type="video/mp4" />
           </video>
         ) : (
           <img
-            src={p.poster}
+            src={asset(p.poster)}
             alt={p.alt}
             width={1600}
             height={1000}

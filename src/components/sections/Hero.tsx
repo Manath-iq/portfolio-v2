@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react'
-import { SITE } from '@/data/site'
+import { CHANNEL_URL } from '@/data/site'
 import { W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { LiveWindow } from '@/components/LiveWindow'
@@ -20,13 +20,20 @@ export function Hero() {
 
       <div className="container relative flex flex-col items-center text-center">
         <Reveal>
+          {/* Пилюля ведёт на самое свежее. Пока канала нет — на витрину:
+              «новый разбор», которого не существует, писать нельзя.
+              Появится канал — поставить SITE.channel и вернуть сюда пост. */}
           <a
-            href={SITE.channelUrl}
-            target="_blank"
-            rel="noopener"
+            href={CHANNEL_URL ?? '#raboty'}
+            target={CHANNEL_URL ? '_blank' : undefined}
+            rel={CHANNEL_URL ? 'noopener' : undefined}
             className="glass-hover inline-flex h-9 items-center gap-2 rounded-[var(--r-pill)] border border-hairline bg-[var(--surface)] px-4 text-[0.875rem]"
           >
-            <span className="shiny-text">Новый разбор: лендинг для автосервиса</span>
+            <span className="shiny-text">
+              {CHANNEL_URL
+                ? 'Новый разбор в Telegram-канале'
+                : 'Десять работ ниже — можно открыть любую'}
+            </span>
             <ArrowRight size={15} strokeWidth={1.5} className="text-text-3" aria-hidden />
           </a>
         </Reveal>

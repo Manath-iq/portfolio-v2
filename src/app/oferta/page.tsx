@@ -3,7 +3,7 @@ import { H, LegalPage } from '@/components/LegalPage'
 import { SITE } from '@/data/site'
 
 export const metadata: Metadata = {
-  title: `Договор-оферта на разработку сайта — ${SITE.name}`,
+  title: `Договор-оферта на разработку сайта — ${SITE.brand}`,
   description:
     'Условия разработки сайта: предмет, стоимость, сроки, порядок правок, права на результат и порядок расторжения.',
   robots: { index: false, follow: true },
@@ -15,7 +15,8 @@ export default function Oferta() {
     <LegalPage title="Договор-оферта на разработку сайта" updated="10.08.2026">
       <p>
         Настоящий документ является публичной офертой индивидуального предпринимателя{' '}
-        {SITE.name}, ИНН {SITE.inn} (далее — Исполнитель), адресованной любому
+        {SITE.name}
+        {SITE.inn ? `, ИНН ${SITE.inn}` : ''} (далее — Исполнитель), адресованной любому
         дееспособному лицу (далее — Заказчик), и содержит условия оказания услуг по
         разработке сайта.
       </p>
@@ -99,7 +100,9 @@ export default function Oferta() {
 
       <H>10. Реквизиты</H>
       <p>
-        ИП {SITE.name}, ИНН {SITE.inn}, {SITE.city}, {SITE.region}. Телефон {SITE.phone}.
+        ИП {SITE.name}
+        {SITE.inn ? `, ИНН ${SITE.inn}` : ''}, {SITE.city}, {SITE.region}. Телефон{' '}
+        {SITE.phone}.
       </p>
     </LegalPage>
   )

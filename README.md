@@ -9,6 +9,20 @@
 
 ---
 
+## Где живёт
+
+Демо на GitHub Pages: **https://manath-iq.github.io/portfolio-v2/**
+Пересобирается сам на каждый пуш в `main` — [.github/workflows/deploy.yml](.github/workflows/deploy.yml).
+
+На Pages сайт открывается по подпути, поэтому сборка идёт с
+`NEXT_PUBLIC_BASE_PATH=/portfolio-v2`. Для боевого домена собирается без этой
+переменной, и всё встаёт в корень — пути проходят через
+[`src/lib/asset.ts`](src/lib/asset.ts), а `@font-face` вынесен в `public/fonts.css`
+с относительными путями, чтобы работать в обоих случаях.
+
+PHP на Pages нет, поэтому там `NEXT_PUBLIC_LEAD_ENDPOINT=''` — форма честно
+уступает место Telegram вместо кнопки, которая всегда падает.
+
 ## Запуск
 
 ```bash

@@ -1,5 +1,5 @@
 import { FAQ } from '@/data/faq'
-import { SITE } from '@/data/site'
+import { CHANNEL_URL, SITE } from '@/data/site'
 
 /**
  * Микроразметка. LocalBusiness через areaServed — офиса с приёмом нет,
@@ -10,7 +10,7 @@ export function JsonLd() {
     {
       '@type': 'Organization',
       '@id': `${SITE.url}/#org`,
-      name: SITE.name,
+      name: `${SITE.name} (${SITE.brand})`,
       url: SITE.url,
       telephone: SITE.phone,
       areaServed: [
@@ -18,12 +18,12 @@ export function JsonLd() {
         { '@type': 'AdministrativeArea', name: SITE.region },
       ],
       founder: { '@type': 'Person', name: SITE.name },
-      sameAs: [SITE.channelUrl],
+      sameAs: [SITE.telegram, CHANNEL_URL].filter(Boolean),
     },
     {
       '@type': 'ProfessionalService',
       '@id': `${SITE.url}/#business`,
-      name: `${SITE.name} — разработка сайтов`,
+      name: `${SITE.brand} — разработка сайтов`,
       description:
         'Разработка лендингов и многостраничных сайтов для бизнеса в Нижнекамске и Татарстане.',
       url: SITE.url,

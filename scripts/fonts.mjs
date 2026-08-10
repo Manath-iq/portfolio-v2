@@ -48,7 +48,9 @@ for (const f of FAMILIES) {
         `  font-style: ${f.style};\n` +
         `  font-weight: ${f.weight};\n` +
         `  font-display: swap;\n` +
-        `  src: url('/fonts/${file}') format('woff2');\n` +
+        // путь относительный: файл лежит в /fonts.css, поэтому fonts/x.woff2
+        // резолвится и в корне домена, и на подпути GitHub Pages
+        `  src: url('fonts/${file}') format('woff2');\n` +
         `  unicode-range: ${range.trim()};\n` +
         `}`,
     )
@@ -56,7 +58,7 @@ for (const f of FAMILIES) {
 }
 
 await writeFile(
-  path.resolve('src/styles/fonts.css'),
+  path.resolve('public/fonts.css'),
   `/* Сгенерировано scripts/fonts.mjs — руками не править. */\n\n${blocks.join('\n\n')}\n`,
 )
-console.log(`\n${blocks.length} @font-face → src/styles/fonts.css`)
+console.log(`\n${blocks.length} @font-face → public/fonts.css`)

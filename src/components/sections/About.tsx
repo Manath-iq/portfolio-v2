@@ -1,8 +1,9 @@
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { ArrowRight } from 'lucide-react'
-import { SITE } from '@/data/site'
+import { CHANNEL_URL, SITE } from '@/data/site'
 import { Reveal } from '@/components/Reveal'
+import { asset } from '@/lib/asset'
 
 /** Фото автора генерировать нельзя. Нет файла — честный плейсхолдер. */
 const PHOTO = '/author.webp'
@@ -21,7 +22,7 @@ export function About() {
             <div className="h-full min-h-[420px] overflow-hidden rounded-[var(--r-xl)] bg-black/[.06] lg:rounded-none lg:rounded-r-[var(--r-xl)]">
               {HAS_PHOTO ? (
                 <img
-                  src={PHOTO}
+                  src={asset(PHOTO)}
                   alt={`${SITE.name} — разработчик сайтов, ${SITE.city}`}
                   width={1200}
                   height={1600}
@@ -54,21 +55,30 @@ export function About() {
                 решить, что человек прочитает первым, где засомневается и что снимет это
                 сомнение.
               </p>
-              <p>
-                Работаю без менеджеров и без очереди из проектов. Правки обсуждаются в
-                переписке и делаются в тот же день. Каждый свой сайт я потом разбираю в
-                Telegram-канале — можно посмотреть, как это устроено изнутри, до того как
-                решишь работать со мной.
-              </p>
+              {/* Про канал с разборами говорим, только когда он есть. */}
+              {CHANNEL_URL ? (
+                <p>
+                  Работаю без менеджеров и без очереди из проектов. Правки обсуждаются в
+                  переписке и делаются в тот же день. Каждый свой сайт я потом разбираю в
+                  Telegram-канале — можно посмотреть, как это устроено изнутри, до того
+                  как решишь работать со мной.
+                </p>
+              ) : (
+                <p>
+                  Работаю без менеджеров и без очереди из проектов. Правки обсуждаются в
+                  переписке и делаются в тот же день. Написать можно сразу в Telegram —
+                  там отвечаю быстрее всего и без «оставьте заявку, вам перезвонят».
+                </p>
+              )}
             </div>
 
             <a
-              href={SITE.channelUrl}
+              href={CHANNEL_URL ?? SITE.telegram}
               target="_blank"
               rel="noopener"
               className="btn btn-ink mt-9 w-fit"
             >
-              Telegram-канал с разборами
+              {CHANNEL_URL ? 'Telegram-канал с разборами' : 'Написать в Telegram'}
               <ArrowRight size={16} strokeWidth={1.5} aria-hidden />
             </a>
           </Reveal>
