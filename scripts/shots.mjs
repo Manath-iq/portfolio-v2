@@ -39,6 +39,12 @@ const s = new S(ws)
 
 await s.send('Page.enable')
 // NOJS=1 — проверка «отключить JS: страница читается, ссылки на месте, FAQ раскрыт»
+if (process.env.RM) {
+  // проверка prefers-reduced-motion: карусель должна стать обычным рядом превью
+  await s.send('Emulation.setEmulatedMedia', {
+    features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
+  })
+}
 if (process.env.NOJS) {
   await s.send('Emulation.setScriptExecutionDisabled', { value: true })
   await s.send('Page.reload', { ignoreCache: true })
