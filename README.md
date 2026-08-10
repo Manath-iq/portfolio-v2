@@ -66,10 +66,11 @@ src/
     ui/           Spotlight, GlowCell
   data/           projects, niches, faq, site, measurements
   lib/            cn, цели Метрики
-  styles/         globals.css (токены + слои) и сгенерированный fonts.css
+  styles/         globals.css — токены, слои, компонентные классы
 public/
   works/          скриншоты и записи работ
   fonts/          woff2, кириллица и латиница отдельными сабсетами
+  fonts.css       сгенерированный @font-face, пути относительные
   photo/          пара для ползунка «до/после»
   api/lead.php    приём заявки и пересылка в Telegram
 scripts/          съёмка ассетов, шрифты, OG, постбилд, скриншоты для проверки
@@ -84,7 +85,7 @@ scripts/          съёмка ассетов, шрифты, OG, постбил�
 | Команда | Что делает |
 |---|---|
 | `node scripts/capture.mjs [id]` | снимает скриншоты и записи скролла живых сайтов через CDP |
-| `node scripts/fonts.mjs` | качает woff2 из Google Fonts и генерирует `src/styles/fonts.css` |
+| `node scripts/fonts.mjs` | качает woff2 из Google Fonts и генерирует `public/fonts.css` |
 | `node scripts/og.mjs` | собирает `public/og.png` из настоящих превью работ |
 | `node scripts/shots.mjs [url] [w] [h] [префикс]` | скриншотит собственную страницу по экранам; `NOJS=1` — с выключенным JS |
 
