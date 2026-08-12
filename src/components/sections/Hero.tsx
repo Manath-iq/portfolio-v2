@@ -3,7 +3,6 @@ import { CHANNEL_URL } from '@/data/site'
 import { W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { LiveWindow } from '@/components/LiveWindow'
-import { Spotlight } from '@/components/ui/Spotlight'
 
 const FACTS = [
   'от 45 000 ₽',
@@ -14,10 +13,9 @@ const FACTS = [
 
 export function Hero() {
   return (
-    <section id="top" className="relative min-h-[100svh] overflow-hidden pt-24 pb-16 sm:pt-28">
-      {/* Свечение первое из двух на всю страницу. Второе — под формой заявки. */}
-      <Spotlight />
-
+    <section id="top" className="relative min-h-[100svh] overflow-hidden pt-20 pb-16 sm:pt-28">
+      {/* Свечение живёт на уровне страницы (см. app/page.tsx): секция начинается
+          под шапкой, и привязанный к ней градиент давал стык на верхней кромке. */}
       <div className="container relative flex flex-col items-center text-center">
         <Reveal>
           {/* Пилюля ведёт на самое свежее. Пока канала нет — на витрину:
@@ -27,14 +25,21 @@ export function Hero() {
             href={CHANNEL_URL ?? '#raboty'}
             target={CHANNEL_URL ? '_blank' : undefined}
             rel={CHANNEL_URL ? 'noopener' : undefined}
-            className="glass-hover inline-flex h-9 items-center gap-2 rounded-[var(--r-pill)] border border-hairline bg-[var(--surface)] px-4 text-[0.875rem]"
+            className="glass-hover inline-flex min-h-9 max-w-full items-center justify-center gap-2 rounded-[var(--r-pill)] border border-hairline bg-[var(--surface)] px-4 py-1.5 text-[0.8125rem] leading-snug sm:px-4.5 sm:text-[0.875rem]"
           >
-            <span className="shiny-text">
+            {/* На узком экране строка длинная: пилюля тянется по высоте,
+                а не режет текст по фиксированным 36px. */}
+            <span className="shiny-text text-balance">
               {CHANNEL_URL
                 ? 'Новый разбор в Telegram-канале'
                 : 'Десять работ ниже — можно открыть любую'}
             </span>
-            <ArrowRight size={15} strokeWidth={1.5} className="text-text-3" aria-hidden />
+            <ArrowRight
+              size={15}
+              strokeWidth={1.5}
+              className="shrink-0 text-text-3"
+              aria-hidden
+            />
           </a>
         </Reveal>
 

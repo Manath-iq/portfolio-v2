@@ -11,13 +11,17 @@ import { Faq } from '@/components/sections/Faq'
 import { LeadForm } from '@/components/sections/LeadForm'
 import { Footer } from '@/components/sections/Footer'
 import { JsonLd } from '@/components/JsonLd'
+import { Spotlight } from '@/components/ui/Spotlight'
 
 export default function Home() {
   return (
-    <>
+    <div className="relative isolate">
       <JsonLd />
+      {/* Свечение первое из двух на всю страницу. Второе — под формой заявки.
+          Стоит выше шапки, чтобы дотягиваться до самой кромки документа. */}
+      <Spotlight />
       <Header />
-      <main>
+      <main className="relative">
         <Hero />
         <NicheMarquee />
         <Showcase />
@@ -30,6 +34,6 @@ export default function Home() {
         <LeadForm />
       </main>
       <Footer />
-    </>
+    </div>
   )
 }

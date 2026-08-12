@@ -70,13 +70,17 @@ export function LeadForm() {
 
   return (
     <section id="zayavka" className="section relative overflow-hidden" aria-labelledby="zayavka-h">
-      {/* Второе и последнее свечение на странице. */}
+      {/* Второе и последнее свечение на странице. Маска гасит нижнюю кромку:
+          секция режет градиент в самой яркой точке, и на границе с подвалом
+          получалась поперечная полоса. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(680px 420px at 50% 100%, rgba(255,77,46,.16), transparent 70%)',
+            'radial-gradient(760px 520px at 50% 100%, rgba(255,77,46,.26), transparent 70%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%)',
+          maskImage: 'linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%)',
         }}
       />
 
