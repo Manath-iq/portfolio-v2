@@ -151,10 +151,16 @@ export function SpeedBar() {
 
 /* ── Адаптив: один экран в трёх ширинах, по кругу ─────────────── */
 
+/**
+ * На каждую ширину — свой кадр, снятый в этом окне (scripts/adaptive.mjs).
+ * Одна картинка на все три состояния не годится: у сайта на 390px другая
+ * вёрстка (бургер, кнопки в столбик, липкая полоса снизу), а не обрезанный
+ * десктоп. Пропорция файла совпадает с пропорцией рамки — кадр встаёт целиком.
+ */
 const WIDTHS = [
-  { label: '1440', w: 'w-full', ratio: 'aspect-[16/10]' },
-  { label: '834', w: 'w-[62%]', ratio: 'aspect-[4/5]' },
-  { label: '390', w: 'w-[34%]', ratio: 'aspect-[9/16]' },
+  { label: '1440', k: 16 / 10, src: '/works/massage-nk-1440.webp', dim: { w: 1120, h: 700 } },
+  { label: '834', k: 4 / 5, src: '/works/massage-nk-834.webp', dim: { w: 700, h: 875 } },
+  { label: '390', k: 9 / 16, src: '/works/massage-nk-390.webp', dim: { w: 400, h: 711 } },
 ]
 
 export function ResponsiveCycle() {
@@ -174,22 +180,32 @@ export function ResponsiveCycle() {
 
   return (
     <div ref={ref} className="flex h-full flex-col items-center justify-end gap-3">
-      <div className="flex h-[190px] w-full items-end justify-center">
+      {/* Высота рамки постоянна, меняется ширина — как если поставить рядом
+          монитор, планшет и телефон. Раньше ширину задавали в процентах ячейки,
+          и рамка на 1440 вырастала до 350px в окне высотой 190 — кадр резало
+          сверху. Теперь ширина считается от высоты, рамка всегда влезает. */}
+      <div className="flex h-[190px] w-full items-center justify-center [--fh:190px] md:h-[280px] md:[--fh:280px]">
         <div
-          className={cn(
-            'overflow-hidden rounded-[10px] border border-white/12 bg-black transition-[width] duration-[var(--dur-slow)] ease-[var(--ease)]',
-            cur.w,
-            cur.ratio,
-          )}
+          className="relative h-full overflow-hidden rounded-[10px] border border-white/12 bg-black transition-[width] duration-[var(--dur-slow)] ease-[var(--ease)]"
+          style={{ width: `calc(var(--fh) * ${cur.k})` }}
         >
-          <img
-            src={asset(project.poster)}
-            alt={project.alt}
-            width={1600}
-            height={1000}
-            loading="lazy"
-            className="size-full object-cover object-top"
-          />
+          {/* Все три кадра лежат стопкой и переключаются прозрачностью:
+              подмена src на лету дала бы моргание пустой рамкой. */}
+          {WIDTHS.map((s, k) => (
+            <img
+              key={s.label}
+              src={asset(s.src)}
+              alt={`${project.alt}, ширина ${s.label} px`}
+              aria-hidden={k !== i}
+              width={s.dim.w}
+              height={s.dim.h}
+              loading="lazy"
+              className={cn(
+                'absolute inset-0 size-full object-cover object-center transition-opacity duration-[var(--dur)] ease-[var(--ease)]',
+                k === i ? 'opacity-100' : 'opacity-0',
+              )}
+            />
+          ))}
         </div>
       </div>
 
