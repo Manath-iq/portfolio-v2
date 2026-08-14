@@ -66,7 +66,10 @@ export function Footer() {
               {NICHES.map((n) => (
                 <li key={n.label}>
                   {n.href ? (
-                    <a href={n.href} className="text-text-2 transition-colors hover:text-text">
+                    <a
+                      href={asset(n.href)}
+                      className="text-text-2 transition-colors hover:text-text"
+                    >
                       {n.label}
                     </a>
                   ) : (

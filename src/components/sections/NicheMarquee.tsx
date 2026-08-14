@@ -1,4 +1,5 @@
 import { NICHES } from '@/data/niches'
+import { asset } from '@/lib/asset'
 
 /**
  * Бегущая строка ниш. Одна строка, растворение по краям маской,
@@ -22,7 +23,14 @@ export function NicheMarquee() {
             aria-hidden={i >= NICHES.length}
           >
             {n.href ? (
-              <a href={n.href} className="text-text-2 transition-colors hover:text-text">
+              <a
+                href={asset(n.href)}
+                /* вторая копия строки существует только ради бесшовного цикла —
+                   её ссылки надо убрать из обхода и из фокуса, иначе каждая
+                   ниша встречается в табуляции дважды */
+                tabIndex={i >= NICHES.length ? -1 : undefined}
+                className="text-text-2 transition-colors hover:text-text"
+              >
                 {n.label}
               </a>
             ) : (
