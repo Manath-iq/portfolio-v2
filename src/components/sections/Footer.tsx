@@ -1,3 +1,4 @@
+import { CITIES } from '@/data/cities'
 import { NICHES } from '@/data/niches'
 import { SITE } from '@/data/site'
 import { Monogram } from '@/components/Monogram'
@@ -7,7 +8,7 @@ export function Footer() {
   return (
     <footer className="hairline-top bg-bg-2">
       <div className="container-wide py-16">
-        <div className="grid gap-10 md:grid-cols-3">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="flex items-center gap-2.5">
               <Monogram className="size-7" />
@@ -35,6 +36,29 @@ export function Footer() {
               </a>
             </div>
           </div>
+
+          {/* Города. Единственная сквозная ссылка на посадочные — стоит на
+              каждой странице, поэтому городские страницы не остаются сиротами. */}
+          <nav aria-label="Города">
+            <p className="t-eyebrow">города</p>
+            <ul className="mt-4 flex flex-col gap-2 text-[0.9375rem]">
+              <li>
+                <a href={asset('/')} className="text-text-2 transition-colors hover:text-text">
+                  Сайты в {SITE.city}е
+                </a>
+              </li>
+              {CITIES.map((c) => (
+                <li key={c.slug}>
+                  <a
+                    href={asset(`/${c.slug}/`)}
+                    className="text-text-2 transition-colors hover:text-text"
+                  >
+                    Сайты {c.inCity}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
           <nav aria-label="Ниши">
             <p className="t-eyebrow">ниши</p>

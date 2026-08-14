@@ -8,8 +8,10 @@ import { StickyFeatures } from '@/components/sections/StickyFeatures'
 import { Pricing } from '@/components/sections/Pricing'
 import { About } from '@/components/sections/About'
 import { Faq } from '@/components/sections/Faq'
+import { Geo } from '@/components/sections/Geo'
 import { LeadForm } from '@/components/sections/LeadForm'
 import { Footer } from '@/components/sections/Footer'
+import { MobileBar } from '@/components/sections/MobileBar'
 import { JsonLd } from '@/components/JsonLd'
 import { Spotlight } from '@/components/ui/Spotlight'
 
@@ -31,9 +33,11 @@ export default function Home() {
         <Pricing />
         <About />
         <Faq />
+        <Geo />
         <LeadForm />
       </main>
       <Footer />
+      <MobileBar />
     </div>
   )
 }

@@ -41,5 +41,6 @@ export const NAV = [
   { label: 'Работы', href: '#raboty' },
   { label: 'Ниши', href: '#nishi' },
   { label: 'Цены', href: '#tseny' },
+  { label: 'Города', href: '#goroda' },
   { label: 'Вопросы', href: '#voprosy' },
 ] as const
