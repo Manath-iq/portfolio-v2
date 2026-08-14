@@ -1,21 +1,24 @@
 import { cn } from '@/lib/utils'
 
 /**
- * Монограмма. Один цвет, без заливок — читается и в 16px фавиконе,
- * и в 40px подвале. Скобки и слэш: код и адрес, ничего абстрактного.
+ * Знак manath — восьмилучевая звезда. Один путь, одна заливка, без обводок:
+ * читается и в 16px фавиконе, и в подвале, и внутри курсора.
+ *
+ * Заливка идёт currentColor, а не белым из исходника: знак стоит и на тёмном
+ * фоне шапки, и в светлой секции, и в кружке курсора, где он чёрный.
+ * Исходный файл лежит в public/logo.svg.
  */
 export function Monogram({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-      className={cn('shrink-0', className)}
-    >
-      <rect x="0.75" y="0.75" width="22.5" height="22.5" rx="7" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
-      <path d="M8.4 7.6 5.2 12l3.2 4.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M15.6 7.6 18.8 12l-3.2 4.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M13.3 6.6 10.7 17.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    <svg viewBox="0 0 356 356" fill="none" aria-hidden className={cn('shrink-0', className)}>
+      <path
+        d="M242.547 177.5L333 215.217L289.091 292.406L208.297 228.374L222.348 331H134.53L147.703 231.006L67.7875 293.283L23.8782 216.094L121.357 178.377L23 138.906L66.9093 62.5943L147.703 122.24L134.53 24H222.348L209.176 124.871L288.212 61.7171L332.122 137.151L242.547 177.5Z"
+        fill="currentColor"
+      />
     </svg>
   )
 }
+
+/** Тот же путь строкой — для фавикона, курсора и всего, что собирается вне React. */
+export const MONOGRAM_PATH =
+  'M242.547 177.5L333 215.217L289.091 292.406L208.297 228.374L222.348 331H134.53L147.703 231.006L67.7875 293.283L23.8782 216.094L121.357 178.377L23 138.906L66.9093 62.5943L147.703 122.24L134.53 24H222.348L209.176 124.871L288.212 61.7171L332.122 137.151L242.547 177.5Z'

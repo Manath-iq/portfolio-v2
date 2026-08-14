@@ -79,9 +79,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* @font-face вынесен из бандла: так пути внутри него остаются
             относительными и переезд на подпуть ничего не ломает */}
         <link rel="stylesheet" href={asset('/fonts.css')} />
+        {/* Пути к файлам не знают про подпуть Pages, поэтому вставляются сюда,
+            где есть asset(). Сам курсор собирается в globals.css. */}
         <style
           dangerouslySetInnerHTML={{
-            __html: `:root{--noise:url(${asset('/noise.png')})}`,
+            __html: `:root{--noise:url(${asset('/noise.png')});--cur:url(${asset('/cursor.png')});--cur-2x:url(${asset('/cursor@2x.png')});--cur-link:url(${asset('/cursor-link.png')});--cur-link-2x:url(${asset('/cursor-link@2x.png')})}`,
           }}
         />
       </head>

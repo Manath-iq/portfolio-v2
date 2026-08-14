@@ -126,6 +126,40 @@
     color: var(--text);
   }
 
+  /* Курсор-значок.
+     Только на мыши: на тач-устройствах курсора нет вообще, а на стилусе
+     подменять его незачем. Горячая точка 5,5 лежит на верхне-левой кромке
+     кружка, поэтому значок висит вниз-вправо от точки нажатия и не закрывает
+     собой то, на что наводят. Первая строка — запасная для браузеров без
+     image-set, вторая добавляет ретину. */
+  @media (pointer: fine) {
+    body {
+      cursor: var(--cur) 5 5, auto;
+      cursor: image-set(var(--cur) 1x, var(--cur-2x) 2x) 5 5, auto;
+    }
+
+    a,
+    button,
+    summary,
+    label,
+    select,
+    [role='tab'],
+    input[type='checkbox'] {
+      cursor: var(--cur-link) 5 5, pointer;
+      cursor: image-set(var(--cur-link) 1x, var(--cur-link-2x) 2x) 5 5, pointer;
+    }
+
+    /* В полях ввода нужна каретка: значок там мешает попасть в букву. */
+    input:not([type='checkbox']),
+    textarea {
+      cursor: text;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+    }
+  }
+
   a {
     color: inherit;
     text-decoration: none;
@@ -232,6 +266,50 @@
   /* Текстовая колонка не шире 64 символов. */
   .measure {
     max-width: 64ch;
+  }
+
+  /* Сравнение «шаблон / сайт от меня».
+     Базовое состояние — то, что видит браузер без JS: переключателя нет,
+     обе колонки стоят одна под другой со своими заголовками, весь текст
+     на месте. data-js ставит React после монтирования, и только тогда
+     появляется переключатель, а неактивная панель убирается. */
+  .cmp-tabs {
+    display: none;
+  }
+
+  [data-js] .cmp-tabs {
+    display: block;
+  }
+
+  [data-js] .cmp-panel[aria-hidden='true'] {
+    display: none;
+  }
+
+  [data-js] .cmp-caption {
+    display: none;
+  }
+
+  /* Строки въезжают лесенкой при переключении. Задержка задаётся инлайном
+     по индексу строки, здесь только само движение. */
+  [data-js] .cmp-row {
+    animation: cmp-row-in 360ms var(--ease) both;
+  }
+
+  @keyframes cmp-row-in {
+    from {
+      opacity: 0;
+      transform: translateY(7px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-js] .cmp-row {
+      animation: none;
+    }
   }
 
   /* Нижняя граница clamp'ов выше рассчитана на планшет: на 390px она никогда

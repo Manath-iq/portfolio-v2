@@ -1,7 +1,12 @@
-import { ArrowRight } from 'lucide-react'
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import { ArrowRight, Check, Minus } from 'lucide-react'
 import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
+import { cn } from '@/lib/utils'
 
+/** [что сравниваем, как у шаблона, как у меня] */
 const ROWS: [string, string, string][] = [
   ['Структура', 'Универсальная, как у всех', 'Под конкретный бизнес и его возражения'],
   ['Тексты', 'Рыба или автозамена города', 'Пишу сам по брифу'],
@@ -12,7 +17,54 @@ const ROWS: [string, string, string][] = [
   ['Исходники и домен', 'Остаются у студии', 'Оформляются на тебя'],
 ]
 
+const PLANS = [
+  {
+    id: 'shablon',
+    price: '15 000',
+    tab: 'Шаблон за 15 000',
+    caption: 'Шаблон за 15 000 ₽',
+    summary: 'Сайт, который уже стоит у трёх конкурентов в этом же городе.',
+  },
+  {
+    id: 'moy',
+    price: '45 000',
+    tab: 'Сайт от меня',
+    caption: 'Сайт от меня, от 45 000 ₽',
+    summary: 'Структура под бизнес, тексты по брифу, исходники и домен на тебя.',
+  },
+] as const
+
+/**
+ * Сравнение через переключатель цены, а не таблицей.
+ *
+ * Таблица здесь была честная, но нечитаемая: три колонки на семь строк — это
+ * двадцать одна ячейка, которые надо сличать глазами. Их никто не сличает.
+ * Переключатель оставляет на экране семь строк вместо двадцати одной, а само
+ * сравнение делает движением: подписи слева стоят на месте, ответы справа
+ * меняются целиком. Разницу видно, а не вычитывают.
+ *
+ * Без JS переключателя нет и обе колонки просто стоят одна под другой со
+ * своими заголовками — весь текст на месте. Управляет этим data-js на
+ * обёртке и правила .cmp-* в globals.css: тот же приём, что у Reveal.
+ */
 export function Comparison() {
+  const [active, setActive] = useState(1)
+  const wrap = useRef<HTMLDivElement>(null)
+  const tabs = useRef<(HTMLButtonElement | null)[]>([])
+
+  useEffect(() => {
+    wrap.current?.setAttribute('data-js', '')
+  }, [])
+
+  // стрелками между вкладками — того же поведения ждут от role="tablist"
+  function onKeyDown(e: React.KeyboardEvent) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+    e.preventDefault()
+    const next = e.key === 'ArrowRight' ? (active + 1) % PLANS.length : (active + PLANS.length - 1) % PLANS.length
+    setActive(next)
+    tabs.current[next]?.focus()
+  }
+
   return (
     <section className="section" aria-labelledby="sravnenie-h">
       <div className="container">
@@ -31,57 +83,118 @@ export function Comparison() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="glass-flat mt-12 overflow-hidden rounded-[var(--r-lg)]">
-            {/* десктоп: таблица */}
-            <table className="hidden w-full border-collapse text-left md:table">
-              <caption className="sr-only">
-                Сравнение шаблонного сайта за 15 000 ₽ и сайта, собранного под задачу
-              </caption>
-              <thead>
-                <tr className="border-b border-hairline">
-                  <th scope="col" className="w-[26%] p-5 text-[0.8125rem] font-normal text-text-3">
-                    <span className="sr-only">Параметр</span>
-                  </th>
-                  <th scope="col" className="w-[37%] p-5 text-[0.9375rem] font-medium text-text-2">
-                    Шаблон за 15 000
-                  </th>
-                  <th scope="col" className="w-[37%] p-5 text-[0.9375rem] font-medium">
-                    Сайт от меня
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {ROWS.map(([label, a, b], i) => (
-                  <tr key={label} className={i < ROWS.length - 1 ? 'border-b border-hairline' : ''}>
-                    <th scope="row" className="p-5 text-[0.9375rem] font-normal text-text-3">
-                      {label}
-                    </th>
-                    <td className="p-5 text-[0.9375rem] text-text-2">{a}</td>
-                    <td className="p-5 text-[0.9375rem]">{b}</td>
-                  </tr>
+          <div ref={wrap} className="glass-flat mt-12 overflow-hidden rounded-[var(--r-lg)]">
+            {/* переключатель. Без JS скрыт — переключать нечем */}
+            <div className="cmp-tabs border-b border-hairline p-3 sm:p-4">
+              <div
+                role="tablist"
+                aria-label="Что входит в цену"
+                onKeyDown={onKeyDown}
+                className="relative grid grid-cols-2 gap-1 rounded-[var(--r-pill)] border border-hairline bg-[var(--bg)] p-1"
+              >
+                {/* бегунок под активной вкладкой */}
+                <span
+                  aria-hidden
+                  className="absolute inset-y-1 left-1 rounded-[var(--r-pill)] bg-[color-mix(in_srgb,var(--accent)_16%,transparent)] ring-1 ring-[color-mix(in_srgb,var(--accent)_45%,transparent)] transition-transform duration-[var(--dur)] ease-[var(--ease)]"
+                  style={{
+                    width: 'calc(50% - 0.25rem)',
+                    transform: `translateX(${active * 100}%)`,
+                  }}
+                />
+                {PLANS.map((p, i) => (
+                  <button
+                    key={p.id}
+                    ref={(el) => {
+                      tabs.current[i] = el
+                    }}
+                    type="button"
+                    role="tab"
+                    id={`cmp-tab-${p.id}`}
+                    aria-selected={i === active}
+                    aria-controls={`cmp-panel-${p.id}`}
+                    tabIndex={i === active ? 0 : -1}
+                    onClick={() => setActive(i)}
+                    className={cn(
+                      'relative z-10 flex min-h-11 flex-col items-center justify-center rounded-[var(--r-pill)] px-3 py-1.5 transition-colors duration-[var(--dur)]',
+                      i === active ? 'text-text' : 'text-text-3 hover:text-text-2',
+                    )}
+                  >
+                    <span className="text-[0.9375rem] font-medium">{p.tab}</span>
+                    <span className="font-mono text-[0.75rem] opacity-70">{p.price} ₽</span>
+                  </button>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </div>
 
-            {/* мобильный: та же таблица разложена карточками */}
-            <div className="md:hidden">
-              {ROWS.map(([label, a, b], i) => (
+            {PLANS.map((p, i) => {
+              const mine = i === 1
+              return (
                 <div
-                  key={label}
-                  className={i < ROWS.length - 1 ? 'border-b border-hairline p-5' : 'p-5'}
+                  key={p.id}
+                  id={`cmp-panel-${p.id}`}
+                  role="tabpanel"
+                  aria-labelledby={`cmp-tab-${p.id}`}
+                  aria-hidden={i !== active}
+                  className="cmp-panel"
                 >
-                  <p className="t-micro">{label}</p>
-                  <p className="mt-3 text-[0.9375rem] text-text-2">
-                    <span className="text-text-3">Шаблон за 15 000 — </span>
-                    {a}
+                  {/* заголовок нужен только когда переключателя нет */}
+                  <p className="cmp-caption border-b border-hairline p-5 text-[0.9375rem] font-medium">
+                    {p.caption}
                   </p>
-                  <p className="mt-2 text-[0.9375rem]">
-                    <span className="text-text-3">Сайт от меня — </span>
-                    {b}
+
+                  <ul>
+                    {ROWS.map(([label, a, b], r) => (
+                      <li
+                        key={label}
+                        className={cn(
+                          'cmp-row flex items-start gap-4 p-5',
+                          r < ROWS.length - 1 && 'border-b border-hairline',
+                        )}
+                        style={{ animationDelay: `${r * 28}ms` }}
+                      >
+                        <span
+                          aria-hidden
+                          className={cn(
+                            'mt-0.5 grid size-5 shrink-0 place-items-center rounded-full',
+                            mine
+                              ? 'bg-[color-mix(in_srgb,var(--accent)_18%,transparent)] text-[var(--accent)]'
+                              : 'bg-[rgba(255,255,255,.05)] text-text-3',
+                          )}
+                        >
+                          {mine ? (
+                            <Check size={13} strokeWidth={2} />
+                          ) : (
+                            <Minus size={13} strokeWidth={2} />
+                          )}
+                        </span>
+
+                        <div className="min-w-0 flex-1 sm:flex sm:items-baseline sm:gap-5">
+                          <span className="t-micro block sm:w-[11rem] sm:shrink-0">{label}</span>
+                          <span
+                            className={cn(
+                              'mt-1.5 block text-[0.9375rem] sm:mt-0',
+                              mine ? 'text-text' : 'text-text-2',
+                            )}
+                          >
+                            {mine ? b : a}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p
+                    className={cn(
+                      'cmp-row border-t border-hairline p-5 text-[0.9375rem]',
+                      mine ? 'text-text' : 'text-text-2',
+                    )}
+                    style={{ animationDelay: `${ROWS.length * 28}ms` }}
+                  >
+                    {p.summary}
                   </p>
                 </div>
-              ))}
-            </div>
+              )
+            })}
           </div>
         </Reveal>
 
