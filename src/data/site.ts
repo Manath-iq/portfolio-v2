@@ -12,7 +12,12 @@ export const SITE = {
   /** Псевдоним — то, чем подписана шапка, подвал и заголовок вкладки. */
   brand: 'manath',
 
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://manath-iq.github.io/portfolio-v2',
+  /**
+   * Боевой адрес. От него зависят canonical, OG, sitemap и все @id
+   * в микроразметке. Переменной окружения его переопределяет только выкладка
+   * копии на GitHub Pages — там свой адрес и свой подпуть.
+   */
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://manath.site',
   city: 'Нижнекамск',
   region: 'Республика Татарстан',
 
@@ -31,8 +36,20 @@ export const SITE = {
   /** ИНН / ОГРНИП. Пока null — строка реквизитов в подвале идёт без номера. */
   inn: null as string | null,
 
-  /** Номер счётчика Метрики. Пока null — цели молча не срабатывают. */
+  /**
+   * Номер счётчика Метрики. Пока null — ни скрипта, ни целей на странице нет,
+   * вызовы goal() молча ничего не делают. Поставить номер — включится и то,
+   * и другое, больше ничего трогать не надо.
+   */
   metrikaId: null as number | null,
+
+  /**
+   * Подтверждение прав в Яндекс.Вебмастере: значение content из мета-тега
+   * yandex-verification, который он выдаёт при добавлении сайта.
+   * Только сам код, без «yandex-verification:» и без кавычек.
+   * Пока null — тега на странице нет.
+   */
+  yandexVerification: null as string | null,
 } as const
 
 export const CHANNEL_URL = SITE.channel ? `https://t.me/${SITE.channel}` : null

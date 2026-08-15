@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Toaster } from 'sonner'
 import { SITE } from '@/data/site'
+import { Metrika } from '@/components/Metrika'
 import { asset } from '@/lib/asset'
 import '@/styles/globals.css'
 
@@ -44,6 +45,10 @@ export const metadata: Metadata = {
     images: [`${SITE.url}/og.png`],
   },
   robots: { index: true, follow: true },
+  // Мета-тег появляется, только когда код проставлен в site.ts.
+  ...(SITE.yandexVerification
+    ? { verification: { yandex: SITE.yandexVerification } }
+    : {}),
   icons: {
     icon: [{ url: asset('/favicon.svg'), type: 'image/svg+xml' }],
     apple: asset('/favicon.svg'),
@@ -89,6 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {children}
+        <Metrika />
         <Toaster
           theme="dark"
           position="bottom-right"

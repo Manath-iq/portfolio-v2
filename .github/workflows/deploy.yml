@@ -37,11 +37,16 @@ jobs:
 
       - name: Собрать статику
         env:
-          # На Pages проектный сайт открывается по подпути /portfolio-v2/.
-          NEXT_PUBLIC_BASE_PATH: /portfolio-v2
-          NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url }}
-          # PHP на Pages нет — форма честно уступает место Telegram.
-          NEXT_PUBLIC_LEAD_ENDPOINT: ''
+          # Свой домен — сайт лежит в корне, подпути больше нет.
+          # NEXT_PUBLIC_SITE_URL тоже не задаётся: боевой адрес живёт
+          # в src/data/site.ts и оттуда же идёт в canonical, OG и sitemap.
+          #
+          # Приёмник заявок. Пустая строка — форма уступает место Telegram.
+          # На Pages нет PHP, поэтому адрес лежит в переменной репозитория:
+          # Settings → Secrets and variables → Actions → Variables,
+          # имя LEAD_ENDPOINT, значение — адрес Cloudflare Worker
+          # (см. workers/lead.js). Пока переменной нет — пустая строка.
+          NEXT_PUBLIC_LEAD_ENDPOINT: ${{ vars.LEAD_ENDPOINT }}
         run: npm run build
 
       - name: Не отдавать сборку Jekyll

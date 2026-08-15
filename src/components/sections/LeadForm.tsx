@@ -12,9 +12,13 @@ import { asset } from '@/lib/asset'
 type State = 'idle' | 'sending' | 'success' | 'error'
 
 /**
- * На боевом хостинге рядом со статикой лежит PHP-приёмник. На GitHub Pages
- * PHP нет вообще, поэтому там переменная выставляется в пустую строку —
- * и форма честно уступает место Telegram вместо кнопки, которая всегда падает.
+ * Куда уходит заявка. На хостинге с PHP — в лежащий рядом api/lead.php,
+ * на статике (GitHub Pages) — в Cloudflare Worker, адрес которого приходит
+ * переменной сборки LEAD_ENDPOINT (см. workers/lead.js).
+ *
+ * Пока приёмника нет, переменная пустая. Тогда поля не рендерятся вовсе:
+ * форма, которая молча ничего не отправляет, хуже её отсутствия — человек
+ * пишет задачу, жмёт кнопку и теряет написанное. Вместо неё прямые контакты.
  */
 const ENDPOINT = process.env.NEXT_PUBLIC_LEAD_ENDPOINT ?? '/api/lead.php'
 const LIVE = ENDPOINT !== ''
@@ -116,6 +120,26 @@ export function LeadForm() {
                   скажу прямо и подскажу, к кому идти.
                 </p>
 
+                {!LIVE ? (
+                  /* Приёмника нет — вместо мёртвых полей прямые контакты. */
+                  <div className="mt-8 flex flex-wrap items-center gap-3">
+                    <a
+                      href={SITE.telegram}
+                      target="_blank"
+                      rel="noopener"
+                      onClick={() => goal('tg_click')}
+                      className="btn btn-accent"
+                    >
+                      Написать в Telegram
+                    </a>
+                    <a href={SITE.whatsapp} target="_blank" rel="noopener" className="btn btn-glass">
+                      WhatsApp
+                    </a>
+                    <a href={SITE.phoneHref} className="btn btn-glass">
+                      {SITE.phone}
+                    </a>
+                  </div>
+                ) : (
                 <form onSubmit={onSubmit} noValidate className="mt-8 flex flex-col gap-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-2">
@@ -192,37 +216,25 @@ export function LeadForm() {
                   ) : null}
 
                   <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-3">
-                    {LIVE ? (
-                      <button
-                        type="submit"
-                        className="btn btn-accent"
-                        disabled={state === 'sending'}
-                      >
-                        {state === 'sending' ? (
-                          <>
-                            <Loader2
-                              size={16}
-                              strokeWidth={1.5}
-                              className="animate-spin"
-                              aria-hidden
-                            />
-                            Отправляю
-                          </>
-                        ) : (
-                          'Отправить'
-                        )}
-                      </button>
-                    ) : (
-                      <a
-                        href={SITE.telegram}
-                        target="_blank"
-                        rel="noopener"
-                        onClick={() => goal('tg_click')}
-                        className="btn btn-accent"
-                      >
-                        Написать в Telegram
-                      </a>
-                    )}
+                    <button
+                      type="submit"
+                      className="btn btn-accent"
+                      disabled={state === 'sending'}
+                    >
+                      {state === 'sending' ? (
+                        <>
+                          <Loader2
+                            size={16}
+                            strokeWidth={1.5}
+                            className="animate-spin"
+                            aria-hidden
+                          />
+                          Отправляю
+                        </>
+                      ) : (
+                        'Отправить'
+                      )}
+                    </button>
 
                     <p className="t-micro">
                       Или сразу —{' '}
@@ -252,16 +264,9 @@ export function LeadForm() {
                         {SITE.phone}
                       </a>
                     </p>
-
-                    {LIVE ? null : (
-                      <p className="t-micro basis-full leading-relaxed">
-                        это копия на GitHub Pages — там нет PHP, поэтому приёмник заявок
-                        не поднят. на боевом хостинге кнопка отправляет форму в Telegram,
-                        не перезагружая страницу.
-                      </p>
-                    )}
                   </div>
                 </form>
+                )}
               </>
             )}
           </div>
