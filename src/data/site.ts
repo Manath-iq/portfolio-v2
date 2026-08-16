@@ -71,7 +71,7 @@ export const SITE = {
    * На хостинге с PHP вместо адреса подставляется '/api/lead.php' — это
    * делает переменная сборки NEXT_PUBLIC_LEAD_ENDPOINT, она главнее.
    */
-  leadEndpoint: null as string | null,
+  leadEndpoint: 'https://portfolio.todominate-ai.workers.dev' as string | null,
 } as const
 
 export const CHANNEL_URL = SITE.channel ? `https://t.me/${SITE.channel}` : null
