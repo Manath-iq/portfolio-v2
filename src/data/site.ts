@@ -50,6 +50,12 @@ export const SITE = {
    * Пока null — тега на странице нет.
    */
   yandexVerification: null as string | null,
+
+  /**
+   * Подтверждение прав в Google Search Console: значение content из мета-тега
+   * google-site-verification. Только сам код. Пока null — тега нет.
+   */
+  googleVerification: null as string | null,
 } as const
 
 export const CHANNEL_URL = SITE.channel ? `https://t.me/${SITE.channel}` : null

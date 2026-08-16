@@ -45,9 +45,14 @@ export const metadata: Metadata = {
     images: [`${SITE.url}/og.png`],
   },
   robots: { index: true, follow: true },
-  // Мета-тег появляется, только когда код проставлен в site.ts.
-  ...(SITE.yandexVerification
-    ? { verification: { yandex: SITE.yandexVerification } }
+  // Мета-теги появляются, только когда коды проставлены в site.ts.
+  ...(SITE.yandexVerification || SITE.googleVerification
+    ? {
+        verification: {
+          ...(SITE.yandexVerification ? { yandex: SITE.yandexVerification } : {}),
+          ...(SITE.googleVerification ? { google: SITE.googleVerification } : {}),
+        },
+      }
     : {}),
   icons: {
     icon: [{ url: asset('/favicon.svg'), type: 'image/svg+xml' }],
