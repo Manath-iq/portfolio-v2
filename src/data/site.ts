@@ -56,6 +56,22 @@ export const SITE = {
    * google-site-verification. Только сам код. Пока null — тега нет.
    */
   googleVerification: null as string | null,
+
+  /**
+   * Куда форма шлёт заявку.
+   *
+   * На статике это адрес Cloudflare Worker вида
+   * https://lead.<имя>.workers.dev — см. workers/lead.js.
+   * Адрес не секрет: токен бота лежит в секретах воркера, а сам эндпоинт
+   * защищён списком разрешённых доменов внутри него.
+   *
+   * Пока null — поля формы не выводятся, вместо них прямые контакты:
+   * форма, которая молча ничего не отправляет, хуже её отсутствия.
+   *
+   * На хостинге с PHP вместо адреса подставляется '/api/lead.php' — это
+   * делает переменная сборки NEXT_PUBLIC_LEAD_ENDPOINT, она главнее.
+   */
+  leadEndpoint: null as string | null,
 } as const
 
 export const CHANNEL_URL = SITE.channel ? `https://t.me/${SITE.channel}` : null

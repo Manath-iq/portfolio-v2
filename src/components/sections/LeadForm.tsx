@@ -12,15 +12,17 @@ import { asset } from '@/lib/asset'
 type State = 'idle' | 'sending' | 'success' | 'error'
 
 /**
- * Куда уходит заявка. На хостинге с PHP — в лежащий рядом api/lead.php,
- * на статике (GitHub Pages) — в Cloudflare Worker, адрес которого приходит
- * переменной сборки LEAD_ENDPOINT (см. workers/lead.js).
+ * Куда уходит заявка.
  *
- * Пока приёмника нет, переменная пустая. Тогда поля не рендерятся вовсе:
- * форма, которая молча ничего не отправляет, хуже её отсутствия — человек
- * пишет задачу, жмёт кнопку и теряет написанное. Вместо неё прямые контакты.
+ * Основной источник — SITE.leadEndpoint: адрес Cloudflare Worker для статики
+ * (см. workers/lead.js). Переменная сборки NEXT_PUBLIC_LEAD_ENDPOINT главнее —
+ * ею хостинг с PHP подставляет свой '/api/lead.php'.
+ *
+ * Пока адреса нет, поля не рендерятся вовсе: форма, которая молча ничего
+ * не отправляет, хуже её отсутствия — человек пишет задачу, жмёт кнопку
+ * и теряет написанное. Вместо неё прямые контакты.
  */
-const ENDPOINT = process.env.NEXT_PUBLIC_LEAD_ENDPOINT ?? '/api/lead.php'
+const ENDPOINT = process.env.NEXT_PUBLIC_LEAD_ENDPOINT || SITE.leadEndpoint || ''
 const LIVE = ENDPOINT !== ''
 
 export function LeadForm() {
