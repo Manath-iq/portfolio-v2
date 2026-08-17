@@ -90,7 +90,11 @@ export function Pricing() {
                   ))}
                 </dl>
 
-                <a href="#zayavka" className="btn btn-accent mt-8 w-full">
+                {/* data-plan подхватывает форма (см. LeadForm): человек, нажавший
+                    на конкретном тарифе, должен увидеть его в заявке, а не
+                    объяснять заново то, что уже выбрал. Секция остаётся
+                    серверной — ловится делегированием, а не onClick. */}
+                <a href="#zayavka" data-plan={plan.name} className="btn btn-accent mt-8 w-full">
                   Обсудить проект
                 </a>
               </div>

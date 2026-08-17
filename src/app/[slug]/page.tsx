@@ -7,6 +7,7 @@ import { Header } from '@/components/sections/Header'
 import { Footer } from '@/components/sections/Footer'
 import { MobileBar } from '@/components/sections/MobileBar'
 import { Pricing } from '@/components/sections/Pricing'
+import { Process } from '@/components/sections/Process'
 import { Faq } from '@/components/sections/Faq'
 import { LeadForm } from '@/components/sections/LeadForm'
 import { StickyFeatures } from '@/components/sections/StickyFeatures'
@@ -71,6 +72,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const url = `${SITE.url}/${slug}/`
 
+  // У ниши своя картинка: ссылку кидают в мессенджер, и превью там — первое,
+  // что видит человек. С общей картинкой девять ниш выглядят одинаково.
+  // Города делят общую: у них отличается город, а не предмет разговора.
+  const image = niche
+    ? { url: `${SITE.url}/og/${niche.slug}.jpg`, type: 'image/jpeg' }
+    : { url: `${SITE.url}/og.png`, type: 'image/png' }
+
   return {
     title: page.title,
     description: page.description,
@@ -82,13 +90,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: `${SITE.brand} — сайты для бизнеса`,
       title: page.title,
       description: page.description,
-      images: [{ url: `${SITE.url}/og.png`, width: 1200, height: 630, alt: page.alt }],
+      images: [{ ...image, width: 1200, height: 630, alt: page.alt }],
     },
     twitter: {
       card: 'summary_large_image',
       title: page.title,
       description: page.description,
-      images: [`${SITE.url}/og.png`],
+      images: [image.url],
     },
     robots: { index: true, follow: true },
   }
@@ -116,6 +124,7 @@ export default async function LandingPage({ params }: Props) {
             <CityWorks city={city} />
             <StickyFeatures />
             <Pricing />
+            <Process />
             <Faq />
             <CityLinks city={city} />
           </>
@@ -127,6 +136,7 @@ export default async function LandingPage({ params }: Props) {
             <NicheWorks niche={niche} />
             <NicheObjections niche={niche} />
             <Pricing />
+            <Process />
             <Faq />
             <NicheLinks niche={niche} />
           </>

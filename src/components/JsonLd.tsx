@@ -22,14 +22,10 @@ export function JsonLd() {
         acceptedAnswer: { '@type': 'Answer', text: f.a },
       })),
     },
-    {
-      '@type': 'BreadcrumbList',
-      '@id': `${SITE.url}/#breadcrumbs`,
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Главная', item: `${SITE.url}/` },
-      ],
-    },
   ]
+  // BreadcrumbList из одного элемента здесь был, но поисковики такую цепочку
+  // игнорируют: крошки начинают что-то значить со второго уровня, а он есть
+  // только на городских и нишевых страницах — там разметка и осталась.
 
   return (
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ld(graph) }} />

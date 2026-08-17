@@ -89,10 +89,17 @@ export default {
     const name = clean(data.name, 120)
     const contact = clean(data.contact, 120)
     const task = clean(data.task, 2000)
+    const plan = clean(data.plan, 60)
     const page = clean(data.page, 300)
 
     if (!name || !contact) {
       return json({ ok: false, error: 'empty' }, 422, allow)
+    }
+
+    // Согласие проверяется и здесь, а не только в форме: галочку на клиенте
+    // видно всем, а принимать персональные данные без неё нельзя.
+    if (data.consent !== true) {
+      return json({ ok: false, error: 'consent' }, 422, allow)
     }
 
     if (!env.BOT_TOKEN || !env.CHAT_ID) {
@@ -103,7 +110,9 @@ export default {
       '<b>Заявка с сайта</b>\n\n' +
       `<b>Имя:</b> ${esc(name)}\n` +
       `<b>Связь:</b> ${esc(contact)}\n` +
+      (plan ? `<b>Формат:</b> ${esc(plan)}\n` : '') +
       (task ? `<b>Задача:</b> ${esc(task)}\n` : '') +
+      '<b>Согласие на обработку ПД:</b> да\n' +
       `\n<i>${esc(page)}</i>`
 
     const res = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {

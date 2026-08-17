@@ -96,22 +96,37 @@ function StickyVideo({ projectId }: { projectId: string }) {
 
   return (
     <div className="glass-flat overflow-hidden rounded-[var(--r-lg)] p-2">
-      <div className="overflow-hidden rounded-[var(--r-md)] bg-black">
+      <div className="relative overflow-hidden rounded-[var(--r-md)] bg-black">
         {p.video ? (
-          <video
-            ref={ref}
-            poster={asset(p.poster)}
-            muted
-            loop
-            playsInline
-            preload="none"
-            width={1152}
-            height={720}
-            className="aspect-[16/10] w-full object-cover object-top"
-          >
-            <source src={asset(p.video)} type="video/webm" />
-            <source src={asset(p.video.replace('.webm', '.mp4'))} type="video/mp4" />
-          </video>
+          <>
+            {/* Кадр отдельной картинкой, а не атрибутом poster: poster грузится
+                вместе с документом и на loading="lazy" не реагирует, а эти три
+                блока стоят за третьим экраном. Подложка ленива, работает без JS
+                и не зависит от того, дошёл ли наблюдатель до элемента. */}
+            <img
+              src={asset(p.poster)}
+              alt={p.alt}
+              width={1600}
+              height={1000}
+              loading="lazy"
+              decoding="async"
+              className="aspect-[16/10] w-full object-cover object-top"
+            />
+            <video
+              ref={ref}
+              muted
+              loop
+              playsInline
+              preload="none"
+              width={1152}
+              height={720}
+              aria-hidden
+              className="absolute inset-0 size-full object-cover object-top"
+            >
+              <source src={asset(p.video)} type="video/webm" />
+              <source src={asset(p.video.replace('.webm', '.mp4'))} type="video/mp4" />
+            </video>
+          </>
         ) : (
           <img
             src={asset(p.poster)}

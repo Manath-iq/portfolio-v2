@@ -51,10 +51,17 @@ if ($clean($data['company'] ?? '', 100) !== '') {
 $name    = $clean($data['name'] ?? '', 120);
 $contact = $clean($data['contact'] ?? '', 120);
 $task    = $clean($data['task'] ?? '', 2000);
+$plan    = $clean($data['plan'] ?? '', 60);
 $page    = $clean($data['page'] ?? '', 300);
 
 if ($name === '' || $contact === '') {
     fail(422, 'empty');
+}
+
+// Согласие проверяется и здесь, а не только в форме: галочку на клиенте
+// видно всем, а принимать персональные данные без неё нельзя.
+if (($data['consent'] ?? null) !== true) {
+    fail(422, 'consent');
 }
 
 // простейший заслон от долбёжки: не чаще раза в 10 секунд с одного адреса
@@ -70,7 +77,9 @@ $esc = static fn (string $s): string => htmlspecialchars($s, ENT_NOQUOTES | ENT_
 $text = "<b>Заявка с сайта</b>\n\n"
       . "<b>Имя:</b> " . $esc($name) . "\n"
       . "<b>Связь:</b> " . $esc($contact) . "\n"
+      . ($plan !== '' ? "<b>Формат:</b> " . $esc($plan) . "\n" : '')
       . ($task !== '' ? "<b>Задача:</b> " . $esc($task) . "\n" : '')
+      . "<b>Согласие на обработку ПД:</b> да\n"
       . "\n<i>" . $esc($page) . "</i>";
 
 $ch = curl_init('https://api.telegram.org/bot' . BOT_TOKEN . '/sendMessage');

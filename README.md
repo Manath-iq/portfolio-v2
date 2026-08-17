@@ -17,8 +17,9 @@
 На Pages сайт открывается по подпути, поэтому сборка идёт с
 `NEXT_PUBLIC_BASE_PATH=/portfolio-v2`. Для боевого домена собирается без этой
 переменной, и всё встаёт в корень — пути проходят через
-[`src/lib/asset.ts`](src/lib/asset.ts), а `@font-face` вынесен в `public/fonts.css`
-с относительными путями, чтобы работать в обоих случаях.
+[`src/lib/asset.ts`](src/lib/asset.ts), включая `@font-face`: правила лежат
+данными в [`src/data/fonts.ts`](src/data/fonts.ts) и инлайнятся в `<head>`,
+поэтому путь к woff2 собирается тем же `asset()` и работает в обоих случаях.
 
 PHP на Pages нет, поэтому там `NEXT_PUBLIC_LEAD_ENDPOINT=''` — форма честно
 уступает место Telegram вместо кнопки, которая всегда падает.
@@ -64,14 +65,14 @@ src/
     bento/        визуалки ячеек бенто
     mockups/      BrowserFrame
     ui/           Spotlight, GlowCell
-  data/           projects, niches, faq, site, measurements
+  data/           projects, niches, faq, site, measurements, fonts
   lib/            cn, цели Метрики
   styles/         globals.css — токены, слои, компонентные классы
 public/
   works/          скриншоты и записи работ
   fonts/          woff2, кириллица и латиница отдельными сабсетами
-  fonts.css       сгенерированный @font-face, пути относительные
   photo/          пара для ползунка «до/после»
+  apple-touch-icon.png  180×180, iOS понимает здесь только растр
   api/lead.php    приём заявки и пересылка в Telegram
 scripts/          съёмка ассетов, шрифты, OG, постбилд, скриншоты для проверки
 ```
@@ -85,8 +86,9 @@ scripts/          съёмка ассетов, шрифты, OG, постбил�
 | Команда | Что делает |
 |---|---|
 | `node scripts/capture.mjs [id]` | снимает скриншоты и записи скролла живых сайтов через CDP |
-| `node scripts/fonts.mjs` | качает woff2 из Google Fonts и генерирует `public/fonts.css` |
+| `node scripts/fonts.mjs` | качает woff2 из Google Fonts и генерирует `src/data/fonts.ts` |
 | `node scripts/og.mjs` | собирает `public/og.png` из настоящих превью работ |
+| `node scripts/icons.mjs` | собирает `public/apple-touch-icon.png` из `favicon.svg` |
 | `node scripts/shots.mjs [url] [w] [h] [префикс]` | скриншотит собственную страницу по экранам; `NOJS=1` — с выключенным JS |
 
 Замер скорости, который показан в ячейке «Скорость»:

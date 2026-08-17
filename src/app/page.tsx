@@ -6,6 +6,7 @@ import { Comparison } from '@/components/sections/Comparison'
 import { Bento } from '@/components/sections/Bento'
 import { StickyFeatures } from '@/components/sections/StickyFeatures'
 import { Pricing } from '@/components/sections/Pricing'
+import { Process } from '@/components/sections/Process'
 import { About } from '@/components/sections/About'
 import { Faq } from '@/components/sections/Faq'
 import { Geo } from '@/components/sections/Geo'
@@ -31,6 +32,9 @@ export default function Home() {
         <Bento />
         <StickyFeatures />
         <Pricing />
+        {/* Сразу после цифры: следующий вопрос человека — «а что если
+            не понравится», и ответ на него стоит рядом с ценой, а не в конце. */}
+        <Process />
         <About />
         <Faq />
         <Geo />

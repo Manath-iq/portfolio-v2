@@ -18,9 +18,17 @@ const FADE_MS = 260
 export function LiveWindow() {
   const items = HERO_PROJECTS
   const [active, setActive] = useState(0)
+  /**
+   * Постер грузится только у тех вкладок, которые человек уже открывал.
+   * Атрибут poster у <video> браузер тянет независимо от того, видно кадр
+   * или нет, — четыре вкладки давали полмегабайта на первом экране ради
+   * одного видимого кадра.
+   */
+  const [seen, setSeen] = useState<ReadonlySet<number>>(() => new Set([0]))
   const [typed, setTyped] = useState(items[0]?.domain ?? '')
   const wrapRef = useRef<HTMLDivElement>(null)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
   const timers = useRef<number[]>([])
 
   // --- набор адреса посимвольно
@@ -118,6 +126,28 @@ export function LiveWindow() {
     }
   }, [])
 
+  /** Показать вкладку: одна точка входа для клика и для стрелок. */
+  function show(i: number) {
+    setActive(i)
+    setSeen((prev) => (prev.has(i) ? prev : new Set(prev).add(i)))
+    goal('hero_tab')
+  }
+
+  /** Стрелки между вкладками — ровно то, чего ждут от role="tablist". */
+  function onTabKeyDown(e: React.KeyboardEvent) {
+    const n = items.length
+    let next: number
+    if (e.key === 'ArrowRight') next = (active + 1) % n
+    else if (e.key === 'ArrowLeft') next = (active - 1 + n) % n
+    else if (e.key === 'Home') next = 0
+    else if (e.key === 'End') next = n - 1
+    else return
+
+    e.preventDefault()
+    show(next)
+    tabRefs.current[next]?.focus()
+  }
+
   if (!items.length) return null
   const current = items[active]
 
@@ -139,6 +169,9 @@ export function LiveWindow() {
           {items.map((p, i) => (
             <div
               key={p.id}
+              id={`live-panel-${p.id}`}
+              role="tabpanel"
+              aria-labelledby={`live-tab-${p.id}`}
               aria-hidden={i !== active}
               className={cn(
                 'absolute inset-0 transition-opacity ease-[var(--ease)]',
@@ -151,7 +184,7 @@ export function LiveWindow() {
                   ref={(el) => {
                     videoRefs.current[i] = el
                   }}
-                  poster={asset(p.poster)}
+                  poster={seen.has(i) ? asset(p.poster) : undefined}
                   muted
                   loop
                   playsInline
@@ -181,18 +214,24 @@ export function LiveWindow() {
       <div
         role="tablist"
         aria-label="Работы в окне"
+        onKeyDown={onTabKeyDown}
         className="no-scrollbar mt-5 flex gap-2 overflow-x-auto px-[var(--gutter)] sm:justify-center sm:px-0"
       >
         {items.map((p, i) => (
           <button
             key={p.id}
+            ref={(el) => {
+              tabRefs.current[i] = el
+            }}
+            id={`live-tab-${p.id}`}
             role="tab"
             type="button"
             aria-selected={i === active}
-            onClick={() => {
-              setActive(i)
-              goal('hero_tab')
-            }}
+            aria-controls={`live-panel-${p.id}`}
+            /* Roving tabindex: у tablist один вход по Tab, дальше стрелки.
+               Иначе четыре кнопки подряд стоят на пути к содержимому. */
+            tabIndex={i === active ? 0 : -1}
+            onClick={() => show(i)}
             className={cn(
               'btn h-11 shrink-0 border px-4 text-[0.875rem]',
               i === active

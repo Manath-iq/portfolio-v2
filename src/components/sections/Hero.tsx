@@ -11,9 +11,16 @@ const FACTS = [
   'не подошёл прототип — возвращаю полностью',
 ]
 
+/**
+ * 100svh на секции живёт только с планшета. На телефоне он гарантировал, что
+ * живое окно — единственное доказательство на первом экране — уедет за фолд
+ * целиком: пилюля, заголовок в пять строк, лид, две кнопки и строка фактов
+ * выбирают экран досуха. Без него кромка окна попадает в кадр и сама работает
+ * приглашением скроллить дальше.
+ */
 export function Hero() {
   return (
-    <section id="top" className="relative min-h-[100svh] overflow-hidden pt-20 pb-16 sm:pt-28">
+    <section id="top" className="relative overflow-hidden pt-20 pb-16 sm:min-h-[100svh] sm:pt-28">
       {/* Свечение живёт на уровне страницы (см. app/page.tsx): секция начинается
           под шапкой, и привязанный к ней градиент давал стык на верхней кромке. */}
       <div className="container relative flex flex-col items-center text-center">
@@ -72,7 +79,11 @@ export function Hero() {
             {FACTS.map((f, i) => (
               <span key={f} className="inline-flex items-center gap-2">
                 {i > 0 && <span aria-hidden>·</span>}
-                {f}
+                {/* Возврат — единственная в строке гарантия, а не параметр
+                    сделки. Одним весом с «предоплата 50%» она пролетает мимо. */}
+                <span className={i === FACTS.length - 1 ? 'font-medium text-text-2' : undefined}>
+                  {f}
+                </span>
               </span>
             ))}
           </p>
@@ -80,7 +91,7 @@ export function Hero() {
       </div>
 
       {/* Живое окно. Снизу подрезано краем экрана — тянется шире контейнера текста. */}
-      <div className="container-wide relative mt-10 sm:mt-14">
+      <div className="container-wide relative mt-7 sm:mt-14">
         <Reveal delay={120}>
           <LiveWindow />
         </Reveal>

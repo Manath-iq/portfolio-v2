@@ -42,17 +42,18 @@ export const ProjectCard = forwardRef<HTMLDivElement, Props>(function ProjectCar
         />
       ))}
 
-      {/* обратная сторона: тот же экран в блюре */}
+      {/* Обратная сторона.
+          Здесь стоял тот же скриншот в блюре, фоновой картинкой. Он тянул все
+          десять постеров — 1,47 МБ — ещё до первого скролла: background-image
+          грузится всегда, лениво он не умеет. При этом карусель наклоняет
+          карточки только по rotateX и не больше чем на ±29°, то есть эту
+          сторону не видно ни в одном положении. Скриншота здесь нет; фон и
+          подпись остаются на случай, если карточку когда-нибудь развернут. */}
       <div
         aria-hidden
-        className="absolute inset-0 overflow-hidden rounded-[24px] border border-white/[.12] [backface-visibility:hidden]"
+        className="absolute inset-0 overflow-hidden rounded-[24px] border border-white/[.12] bg-[#0d0d10] [backface-visibility:hidden]"
         style={{ transform: 'translateZ(-2px) rotateY(180deg)' }}
       >
-        <div
-          className="absolute inset-0 scale-110 bg-cover bg-top opacity-40 blur-md"
-          style={{ backgroundImage: `url(${asset(project.poster)})` }}
-        />
-        <div className="absolute inset-0 bg-black/55" />
         <div className="absolute inset-x-0 bottom-0 p-5">
           <p className="t-micro">{project.niche}</p>
           <p className="mt-1 text-[1.0625rem] font-medium">{project.title}</p>

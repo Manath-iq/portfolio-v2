@@ -43,22 +43,38 @@ for (const f of FAMILIES) {
     console.log(`${file}  ${(buf.length / 1024).toFixed(1)} КБ`)
 
     blocks.push(
-      `@font-face {\n` +
-        `  font-family: '${f.family}';\n` +
-        `  font-style: ${f.style};\n` +
-        `  font-weight: ${f.weight};\n` +
-        `  font-display: swap;\n` +
-        // путь относительный: файл лежит в /fonts.css, поэтому fonts/x.woff2
-        // резолвится и в корне домена, и на подпути GitHub Pages
-        `  src: url('fonts/${file}') format('woff2');\n` +
-        `  unicode-range: ${range.trim()};\n` +
-        `}`,
+      `  {\n` +
+        `    family: '${f.family}',\n` +
+        `    style: '${f.style}',\n` +
+        `    weight: '${f.weight}',\n` +
+        `    file: '${file}',\n` +
+        `    range:\n      '${range.trim()}',\n` +
+        `  },`,
     )
   }
 }
 
+// Данными, а не готовым CSS: правила инлайнятся в <head> из layout.tsx, где
+// путь к файлу собирается через asset() и подпуть GitHub Pages сохраняется.
+// Отдельным public/fonts.css это было второй блокирующей рендер таблицей
+// стилей, о которой браузер узнавал только разобрав HTML.
 await writeFile(
-  path.resolve('public/fonts.css'),
-  `/* Сгенерировано scripts/fonts.mjs — руками не править. */\n\n${blocks.join('\n\n')}\n`,
+  path.resolve('src/data/fonts.ts'),
+  `/**\n` +
+    ` * Сгенерировано scripts/fonts.mjs — руками не править.\n` +
+    ` *\n` +
+    ` * Правила инлайнятся в <head> (см. app/layout.tsx). Отдельным файлом они\n` +
+    ` * были второй блокирующей рендер таблицей стилей, которую браузер\n` +
+    ` * обнаруживал лишь разобрав HTML.\n` +
+    ` */\n\n` +
+    `export type FontFace = {\n` +
+    `  family: string\n` +
+    `  style: string\n` +
+    `  weight: string\n` +
+    `  /** Имя файла внутри /fonts/. Префикс подставляет asset(). */\n` +
+    `  file: string\n` +
+    `  range: string\n` +
+    `}\n\n` +
+    `export const FONT_FACES: FontFace[] = [\n${blocks.join('\n')}\n]\n`,
 )
-console.log(`\n${blocks.length} @font-face → public/fonts.css`)
+console.log(`\n${blocks.length} @font-face → src/data/fonts.ts`)

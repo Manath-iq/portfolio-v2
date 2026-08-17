@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import { Toaster } from 'sonner'
 import { SITE } from '@/data/site'
+import { FONT_FACES } from '@/data/fonts'
 import { Metrika } from '@/components/Metrika'
+import { ClickGoals } from '@/components/ClickGoals'
 import { asset } from '@/lib/asset'
 import '@/styles/globals.css'
 
@@ -56,7 +58,10 @@ export const metadata: Metadata = {
     : {}),
   icons: {
     icon: [{ url: asset('/favicon.svg'), type: 'image/svg+xml' }],
-    apple: asset('/favicon.svg'),
+    // Safari на iOS понимает здесь только растр: с SVG он молча берёт вместо
+    // иконки уменьшенный скриншот страницы. Собирается scripts/icons.mjs
+    // из того же favicon.svg, чтобы источник оставался один.
+    apple: [{ url: asset('/apple-touch-icon.png'), sizes: '180x180', type: 'image/png' }],
   },
 }
 
@@ -86,19 +91,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        {/* @font-face вынесен из бандла: так пути внутри него остаются
-            относительными и переезд на подпуть ничего не ломает */}
-        <link rel="stylesheet" href={asset('/fonts.css')} />
-        {/* Пути к файлам не знают про подпуть Pages, поэтому вставляются сюда,
-            где есть asset(). Сам курсор собирается в globals.css. */}
+        {/* Playfair стоит внутри h1 — в акцентном слове, то есть внутри
+            LCP-элемента. Без предзагрузки он обнаруживается только после
+            разбора fonts.css, и заголовок перерисовывается на глазах. */}
+        <link
+          rel="preload"
+          href={asset('/fonts/playfair-italic-cyrillic.woff2')}
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        {/* @font-face инлайном, а не отдельным fonts.css: файл был второй
+            блокирующей рендер таблицей стилей, и браузер узнавал о нём только
+            разобрав HTML — лишний круг перед тем, как станет известно, какие
+            шрифты вообще нужны. Пути собираются через asset(), поэтому подпуть
+            GitHub Pages по-прежнему работает. Там же переменные курсора: сам
+            курсор собирается в globals.css. */}
         <style
           dangerouslySetInnerHTML={{
-            __html: `:root{--noise:url(${asset('/noise.png')});--cur:url(${asset('/cursor.png')});--cur-2x:url(${asset('/cursor@2x.png')});--cur-link:url(${asset('/cursor-link.png')});--cur-link-2x:url(${asset('/cursor-link@2x.png')})}`,
+            __html:
+              FONT_FACES.map(
+                (f) =>
+                  `@font-face{font-family:'${f.family}';font-style:${f.style};font-weight:${f.weight};font-display:swap;src:url(${asset(`/fonts/${f.file}`)}) format('woff2');unicode-range:${f.range}}`,
+              ).join('') +
+              `:root{--noise:url(${asset('/noise.png')});--cur:url(${asset('/cursor.png')});--cur-2x:url(${asset('/cursor@2x.png')});--cur-link:url(${asset('/cursor-link.png')});--cur-link-2x:url(${asset('/cursor-link@2x.png')})}`,
           }}
         />
       </head>
       <body>
         {children}
+        <ClickGoals />
         <Metrika />
         <Toaster
           theme="dark"

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { SITE } from '@/data/site'
@@ -28,6 +28,45 @@ const LIVE = ENDPOINT !== ''
 export function LeadForm() {
   const [state, setState] = useState<State>('idle')
   const [error, setError] = useState('')
+  /** Цель на первый фокус в форме: «до формы не доходят» и «доходят,
+      но бросают» — это два разных диагноза и два разных лечения. */
+  const started = useRef(false)
+  /** Тариф, с карточки которого человек пришёл. Ставится делегированием,
+      чтобы прайс остался серверным компонентом. */
+  const [plan, setPlan] = useState<string | null>(null)
+  /**
+   * Поля, которые человек уже покинул пустыми. Проверка по blur, а не по вводу:
+   * подсвечивать «неправильно» посреди набора — это ругаться на недописанное.
+   * Правило .field[aria-invalid='true'] в globals.css до сих пор существовало
+   * само по себе, выставить его было некому.
+   */
+  const [invalid, setInvalid] = useState<ReadonlySet<string>>(new Set())
+  const successRef = useRef<HTMLDivElement>(null)
+
+  function checkOnBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const { name, value } = e.currentTarget
+    setInvalid((prev) => {
+      const next = new Set(prev)
+      if (value.trim()) next.delete(name)
+      else next.add(name)
+      return next
+    })
+  }
+
+  // Успех подменяет карточку целиком: фокус надо перенести руками.
+  useEffect(() => {
+    if (state === 'success') successRef.current?.focus()
+  }, [state])
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement | null)?.closest?.('a[data-plan]')
+      if (a) setPlan(a.getAttribute('data-plan'))
+    }
+
+    document.addEventListener('click', onClick, { capture: true })
+    return () => document.removeEventListener('click', onClick, { capture: true })
+  }, [])
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -39,6 +78,12 @@ export function LeadForm() {
       name: String(fd.get('name') ?? '').trim(),
       contact: String(fd.get('contact') ?? '').trim(),
       task: String(fd.get('task') ?? '').trim(),
+      // Тариф, если человек пришёл с карточки прайса. Без него заявки
+      // с трёх разных кнопок неотличимы друг от друга.
+      plan: plan ?? '',
+      // Факт согласия уезжает вместе с заявкой: доказательство по 152-ФЗ должно
+      // лежать там же, где сама заявка, а не подразумеваться галочкой на клиенте.
+      consent: fd.get('consent') === 'on',
       // honeypot: живой человек это поле не видит и не заполняет
       company: String(fd.get('company') ?? ''),
       page: typeof window !== 'undefined' ? window.location.href : '',
@@ -46,6 +91,14 @@ export function LeadForm() {
 
     if (!payload.name || !payload.contact) {
       setError('Заполните имя и способ связи.')
+      return
+    }
+
+    // noValidate выключает нативную проверку целиком, вместе с required
+    // у чекбокса. Без этой ветки заявку можно отправить без согласия,
+    // и она уйдёт в Telegram неотличимой от согласованной.
+    if (!payload.consent) {
+      setError('Отметьте согласие на обработку данных — без него я не могу принять заявку.')
       return
     }
 
@@ -94,7 +147,11 @@ export function LeadForm() {
         <Reveal>
           <div className="glass mx-auto max-w-[820px] p-6 sm:p-10">
             {state === 'success' ? (
-              <div className="py-8 text-center">
+              /* Форма исчезает целиком, и фокус вместе с ней — без переноса
+                 незрячий человек остаётся на пропавшей кнопке и не узнаёт,
+                 что заявка ушла. tabIndex -1 делает блок принимающим фокус,
+                 не попадая при этом в обход по Tab. */
+              <div ref={successRef} tabIndex={-1} className="py-8 text-center outline-none">
                 <h2 id="zayavka-h" className="t-h2 text-[clamp(1.6rem,3vw,2.2rem)]">
                   Готово.
                 </h2>
@@ -122,6 +179,15 @@ export function LeadForm() {
                   скажу прямо и подскажу, к кому идти.
                 </p>
 
+                {/* Подтверждение выбора: человек, пришедший с карточки тарифа,
+                    должен видеть, что его выбор доехал, — иначе он объясняет
+                    заново то, на что уже нажал. */}
+                {plan ? (
+                  <p className="t-micro mt-5 inline-flex items-center gap-2 rounded-[var(--r-pill)] border border-hairline bg-[var(--surface)] px-3.5 py-1.5">
+                    формат: <span className="text-text">{plan}</span>
+                  </p>
+                ) : null}
+
                 {!LIVE ? (
                   /* Приёмника нет — вместо мёртвых полей прямые контакты. */
                   <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -142,7 +208,16 @@ export function LeadForm() {
                     </a>
                   </div>
                 ) : (
-                <form onSubmit={onSubmit} noValidate className="mt-8 flex flex-col gap-4">
+                <form
+                  onSubmit={onSubmit}
+                  noValidate
+                  onFocusCapture={() => {
+                    if (started.current) return
+                    started.current = true
+                    goal('form_start')
+                  }}
+                  className="mt-8 flex flex-col gap-4"
+                >
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-2">
                       <label htmlFor="name" className="t-micro">
@@ -154,6 +229,8 @@ export function LeadForm() {
                         className="field"
                         autoComplete="name"
                         required
+                        aria-invalid={invalid.has('name') || undefined}
+                        onBlur={checkOnBlur}
                         placeholder="Марат"
                       />
                     </div>
@@ -168,6 +245,8 @@ export function LeadForm() {
                         className="field"
                         autoComplete="tel"
                         required
+                        aria-invalid={invalid.has('contact') || undefined}
+                        onBlur={checkOnBlur}
                         placeholder="+7 917 … или @username"
                       />
                     </div>
