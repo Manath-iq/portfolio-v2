@@ -271,47 +271,631 @@
     max-width: 64ch;
   }
 
-  /* Сравнение «шаблон / сайт от меня».
-     Базовое состояние — то, что видит браузер без JS: переключателя нет,
-     обе колонки стоят одна под другой со своими заголовками, весь текст
-     на месте. data-js ставит React после монтирования, и только тогда
-     появляется переключатель, а неактивная панель убирается. */
-  .cmp-tabs {
+  /* ─────────────────────────────────────────────────────────────
+     РАЗБОР МАКЕТА  «а чем это лучше сайта за 15 тысяч»
+     ───────────────────────────────────────────────────────────── */
+
+  /* Базовое состояние — то, что видит браузер без JS: тумблера и подсказки
+     нет, макет стоит шаблонным, список раскрыт целиком. data-js ставит React
+     после монтирования, и только тогда список схлопывается до одной строки. */
+  .cmp-modes,
+  .cmp-hint {
     display: none;
   }
 
-  [data-js] .cmp-tabs {
+  [data-js] .cmp-modes {
+    display: flex;
+  }
+
+  [data-js] .cmp-hint {
     display: block;
   }
 
-  [data-js] .cmp-panel[aria-hidden='true'] {
-    display: none;
+  .cmp-num {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    flex: none;
+    border-radius: 999px;
+    border: 1px solid var(--hairline-2);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    color: var(--text-3);
+    transition:
+      background-color var(--dur) var(--ease),
+      border-color var(--dur) var(--ease),
+      color var(--dur) var(--ease);
   }
 
-  [data-js] .cmp-caption {
-    display: none;
+  [data-js] .cmp-item[data-open='true'] .cmp-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
   }
 
-  /* Строки въезжают лесенкой при переключении. Задержка задаётся инлайном
-     по индексу строки, здесь только само движение. */
-  [data-js] .cmp-row {
-    animation: cmp-row-in 360ms var(--ease) both;
+  [data-js] .cmp-item[data-open='true'] .cmp-label {
+    color: var(--text);
   }
 
-  @keyframes cmp-row-in {
-    from {
+  /* Раскрытие через 0fr → 1fr: работает везде, анимируется без замера высоты
+     и не ломается, когда JS не доехал — тогда это просто обычный блок. */
+  [data-js] .cmp-detail {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 280ms var(--ease);
+  }
+
+  [data-js] .cmp-item[data-open='true'] .cmp-detail {
+    grid-template-rows: 1fr;
+  }
+
+  [data-js] .cmp-detail > div {
+    overflow: hidden;
+  }
+
+  /* Активная сторона — та, что сейчас показана на макете. */
+  .cmp-side {
+    border-left: 2px solid transparent;
+    padding-left: 12px;
+    transition:
+      border-color var(--dur) var(--ease),
+      opacity var(--dur) var(--ease);
+  }
+
+  [data-js][data-mode='bad'] .cmp-side[data-side='bad'],
+  [data-js][data-mode='good'] .cmp-side[data-side='good'] {
+    border-color: var(--hairline-2);
+  }
+
+  [data-js][data-mode='good'] .cmp-side[data-side='good'] {
+    border-color: var(--accent);
+  }
+
+  [data-js][data-mode='bad'] .cmp-side[data-side='good'],
+  [data-js][data-mode='good'] .cmp-side[data-side='bad'] {
+    opacity: 0.55;
+  }
+
+  /* ── сам макет ─────────────────────────────────────────────────
+     Всё внутри меряется в cqw от ширины окна-макета, поэтому он
+     остаётся одним и тем же сайтом и на 1180, и на 360 — не рассыпается
+     и не требует второй вёрстки. Пол в px не даёт тексту исчезнуть
+     на телефоне. */
+
+  /* Телефон стоит отдельной колонкой и заезжает на угол окна отрицательным
+     отступом. Абсолютным позиционированием он накрывал бы третью плитку —
+     ровно то место, о котором говорит пункт «Структура». */
+  .tpl-wrap {
+    container-type: inline-size;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .tpl {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--hairline);
+    background: var(--bg-2);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 40px 90px -40px rgba(0, 0, 0, 0.95);
+  }
+
+  /* Оба текста лежат в одной клетке грида и меняются прозрачностью: высота
+     считается по длинному варианту, поэтому на переключении ничего не прыгает. */
+  .tpl-swap {
+    display: grid;
+    min-width: 0;
+  }
+
+  .tpl-swap > .tpl-v {
+    grid-area: 1 / 1;
+    min-width: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  .tpl-wrap[data-mode='bad'] .tpl-v-good,
+  .tpl-wrap[data-mode='good'] .tpl-v-bad {
+    opacity: 0;
+  }
+
+  /* зона разбора */
+  .tpl-spot {
+    position: relative;
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    border-radius: max(6px, 1.4cqw);
+    transition:
+      box-shadow var(--dur) var(--ease),
+      background-color var(--dur) var(--ease);
+  }
+
+  .tpl-zone {
+    display: block;
+    width: 100%;
+  }
+
+  .tpl-spot[data-on='true'] {
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+    box-shadow:
+      0 0 0 1.5px var(--accent),
+      0 0 0 6px color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  .tpl-pin {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--bg-2);
+    border: 1px solid var(--hairline-2);
+    color: var(--text-2);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    line-height: 1;
+    transition:
+      background-color var(--dur) var(--ease),
+      border-color var(--dur) var(--ease),
+      color var(--dur) var(--ease);
+  }
+
+  .tpl-spot[data-on='true'] .tpl-pin {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* До первого касания метки медленно пульсируют — иначе их не замечают
+     и разбор остаётся нетронутым. После первого клика кольцо гаснет. */
+  .tpl-wrap[data-touched='false'] .tpl-pin::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 999px;
+    border: 1px solid var(--accent);
+    animation: tpl-ping 2.6s var(--ease) infinite;
+  }
+
+  @keyframes tpl-ping {
+    0% {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+    70%,
+    100% {
       opacity: 0;
-      transform: translateY(7px);
+      transform: scale(2.1);
     }
-    to {
-      opacity: 1;
-      transform: none;
+  }
+
+  /* хром */
+  .tpl-chrome {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.4cqw;
+    padding: 2.2cqw 2.6cqw 0;
+  }
+
+  .tpl-dots {
+    display: flex;
+    flex: none;
+    gap: 1cqw;
+    padding-bottom: 1.6cqw;
+  }
+
+  .tpl-dots i {
+    width: max(5px, 1.05cqw);
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .tpl-tab {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    max-width: 66cqw;
+    padding: 1.3cqw 2.2cqw;
+    border: 1px solid var(--hairline);
+    border-bottom: none;
+    border-radius: max(6px, 1.3cqw) max(6px, 1.3cqw) 0 0;
+    background: rgba(255, 255, 255, 0.05);
+    font-family: var(--font-mono);
+    font-size: max(8px, 1.45cqw);
+    color: var(--text-2);
+  }
+
+  .tpl-tab .tpl-v {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tpl-bar {
+    display: flex;
+    align-items: center;
+    padding: 0 2.6cqw 2.2cqw;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .tpl-url {
+    display: flex;
+    align-items: center;
+    gap: 1.4cqw;
+    flex: 1;
+    min-width: 0;
+    padding: 1.3cqw 2.2cqw;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.3);
+    font-family: var(--font-mono);
+    font-size: max(8px, 1.4cqw);
+    color: var(--text-2);
+  }
+
+  .tpl-lock {
+    width: max(8px, 1.5cqw);
+    height: max(8px, 1.5cqw);
+    flex: none;
+    color: var(--text-3);
+  }
+
+  /* страница */
+  .tpl-body {
+    padding: 3.4cqw;
+  }
+
+  .tpl-nav {
+    display: flex;
+    align-items: center;
+    gap: 2.4cqw;
+    padding-bottom: 3cqw;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .tpl-brand {
+    font-size: max(10px, 1.95cqw);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .tpl-links {
+    display: flex;
+    gap: 2.4cqw;
+    margin-left: auto;
+    font-size: max(8px, 1.45cqw);
+    color: var(--text-3);
+  }
+
+  .tpl-links .tpl-v,
+  .tpl-tel .tpl-v {
+    white-space: nowrap;
+  }
+
+  .tpl-tel {
+    font-family: var(--font-mono);
+    font-size: max(8px, 1.4cqw);
+    color: var(--text-3);
+  }
+
+  /* Узкий макет: пункты меню начинают налезать друг на друга. Настоящий сайт
+     в этой ширине их и прячет — остаются марка и телефон. */
+  @container (max-width: 470px) {
+    .tpl-links {
+      display: none;
     }
+  }
+
+  .tpl-hero {
+    display: grid;
+    grid-template-columns: 0.72fr 1fr;
+    align-items: center;
+    gap: 3.4cqw;
+    padding: 3.6cqw 0 4cqw;
+  }
+
+  .tpl-photo {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: max(6px, 1.4cqw);
+    border: 1px solid var(--hairline);
+    transition: background var(--dur) var(--ease);
+  }
+
+  .tpl-wrap[data-mode='bad'] .tpl-photo {
+    background: linear-gradient(135deg, #26262b, #17171b);
+  }
+
+  .tpl-wrap[data-mode='good'] .tpl-photo {
+    background:
+      radial-gradient(90% 70% at 25% 10%, rgba(255, 162, 58, 0.35), transparent 70%),
+      linear-gradient(150deg, #3a241c, #121014);
+  }
+
+  /* перечёркнутый прямоугольник — универсальный значок «здесь была картинка» */
+  .tpl-photo::before,
+  .tpl-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  .tpl-photo::before {
+    background:
+      linear-gradient(to top right, transparent calc(50% - 0.5px), rgba(255, 255, 255, 0.1) 50%, transparent calc(50% + 0.5px)),
+      linear-gradient(to bottom right, transparent calc(50% - 0.5px), rgba(255, 255, 255, 0.1) 50%, transparent calc(50% + 0.5px));
+  }
+
+  .tpl-wrap[data-mode='good'] .tpl-photo::before {
+    opacity: 0;
+  }
+
+  .tpl-copy {
+    min-width: 0;
+  }
+
+  .tpl-h {
+    font-size: max(15px, 4.2cqw);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .tpl-sub {
+    margin-top: 1.8cqw;
+    font-size: max(9px, 1.85cqw);
+    line-height: 1.4;
+    color: var(--text-2);
+  }
+
+  .tpl-zone-cta {
+    margin-top: 3cqw;
+  }
+
+  .tpl-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.7cqw 3.4cqw;
+    border-radius: 999px;
+    font-size: max(9px, 1.8cqw);
+    font-weight: 500;
+    transition:
+      background-color var(--dur) var(--ease),
+      color var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .tpl-wrap[data-mode='bad'] .tpl-cta {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--hairline);
+    color: var(--text-2);
+  }
+
+  .tpl-wrap[data-mode='good'] .tpl-cta {
+    background: var(--accent);
+    border: 1px solid transparent;
+    color: #fff;
+    box-shadow: 0 1cqw 3cqw -1.2cqw rgba(255, 77, 46, 0.75);
+  }
+
+  .tpl-note {
+    margin-top: 1.4cqw;
+    font-family: var(--font-mono);
+    font-size: max(7px, 1.3cqw);
+    color: var(--text-3);
+  }
+
+  .tpl-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.2cqw;
+  }
+
+  .tpl-tile {
+    display: block;
+    padding: 2.2cqw;
+    border: 1px solid var(--hairline);
+    border-radius: max(5px, 1.2cqw);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .tpl-tile-k {
+    font-size: max(9px, 1.85cqw);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    transition: font-size var(--dur) var(--ease);
+  }
+
+  .tpl-wrap[data-mode='good'] .tpl-tile-k {
+    font-size: max(11px, 2.7cqw);
+  }
+
+  .tpl-tile-v {
+    margin-top: 1.4cqw;
+    font-size: max(7px, 1.35cqw);
+    line-height: 1.35;
+    color: var(--text-3);
+  }
+
+  /* серые полоски вместо текста — ровно то, чем шаблон и заполняют */
+  .tpl-fake {
+    display: block;
+    height: max(3px, 0.85cqw);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  .tpl-fake + .tpl-fake {
+    margin-top: 1cqw;
+  }
+
+  .tpl-zone-foot {
+    margin-top: 3.4cqw;
+  }
+
+  .tpl-foot {
+    padding-top: 2.6cqw;
+    border-top: 1px solid var(--hairline);
+    font-size: max(7px, 1.35cqw);
+    color: var(--text-3);
+  }
+
+  /* ── телефон сбоку ───────────────────────────────────────────
+     Корпус меряется в px: cqw внутри самого .tpl-phone считался бы от
+     ширины обёртки, а не телефона, и рамка выходила бы в палец толщиной.
+     Внутри — свой container, поэтому полоски на экране считаются уже от
+     телефона и читаются даже когда макет ужат до 340px. Экран с
+     overflow: hidden — в шаблонном состоянии вёрстка уезжает за край
+     ровно так, как это выглядит на настоящем телефоне. */
+
+  .tpl-phone {
+    container-type: inline-size;
+    flex: none;
+    align-self: flex-end;
+    width: max(66px, 13cqw);
+    /* Заезжает на угол окна и свисает ниже — «устройство перед экраном».
+       Заход ровно в поле макета: глубже он накрывает третью плитку, а это
+       то самое место, о котором говорит пункт «Структура». */
+    margin-left: max(-20px, -2.6cqw);
+    margin-bottom: max(-26px, -3cqw);
+    padding: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 14px;
+    background: #0d0d10;
+    box-shadow: 0 26px 46px -18px rgba(0, 0, 0, 0.95);
+  }
+
+  /* обводка выбранной зоны съела бы тень корпуса — возвращаем обе */
+  .tpl-phone[data-on='true'] {
+    background: #0d0d10;
+    box-shadow:
+      0 26px 46px -18px rgba(0, 0, 0, 0.95),
+      0 0 0 1.5px var(--accent),
+      0 0 0 6px color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  .tpl-screen {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 9 / 17;
+    padding: 6cqw;
+    border-radius: 9px;
+    background: linear-gradient(180deg, #15151a, #0a0a0c);
+  }
+
+  .tpl-pl,
+  .tpl-pl-cta {
+    display: block;
+    height: 5cqw;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    transition:
+      width var(--dur) var(--ease),
+      margin var(--dur) var(--ease),
+      background-color var(--dur) var(--ease);
+  }
+
+  .tpl-pl + .tpl-pl {
+    margin-top: 4cqw;
+  }
+
+  .tpl-pl-cta {
+    margin-top: 8cqw;
+    height: 8cqw;
+    border-radius: 999px;
+  }
+
+  .tpl-wrap[data-mode='bad'] .tpl-pl-1 {
+    width: 132%;
+  }
+  .tpl-wrap[data-mode='bad'] .tpl-pl-2 {
+    width: 118%;
+  }
+  .tpl-wrap[data-mode='bad'] .tpl-pl-3 {
+    width: 74%;
+  }
+  .tpl-wrap[data-mode='bad'] .tpl-pl-cta {
+    width: 76%;
+    margin-left: 46%;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .tpl-wrap[data-mode='good'] .tpl-pl-1 {
+    width: 86%;
+  }
+  .tpl-wrap[data-mode='good'] .tpl-pl-2 {
+    width: 62%;
+  }
+  .tpl-wrap[data-mode='good'] .tpl-pl-3 {
+    width: 40%;
+  }
+  .tpl-wrap[data-mode='good'] .tpl-pl-cta {
+    width: 100%;
+    margin-left: 0;
+    background: var(--accent);
+  }
+
+  /* липкая полоса звонка — только у нормальной версии */
+  .tpl-pl-tab {
+    position: absolute;
+    inset-inline: 6cqw;
+    bottom: 6cqw;
+    height: 7cqw;
+    border-radius: 3cqw;
+    background: rgba(255, 255, 255, 0.14);
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  /* горизонтальная прокрутка — след того, что вёрстка не влезла */
+  .tpl-pl-scroll {
+    position: absolute;
+    left: 4cqw;
+    bottom: 2.5cqw;
+    width: 62%;
+    height: 2cqw;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.28);
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  .tpl-wrap[data-mode='bad'] .tpl-pl-tab,
+  .tpl-wrap[data-mode='good'] .tpl-pl-scroll {
+    opacity: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-js] .cmp-row {
+    .tpl-wrap[data-touched='false'] .tpl-pin::after {
       animation: none;
+      opacity: 0;
+    }
+  }
+
+  /* На телефоне метка в 20px закрывает собой пол-заголовка макета. Ужимаем:
+     нажимать всё равно удобнее по самой зоне, она во всю ширину. */
+  @media (max-width: 640px) {
+    .tpl-pin {
+      width: 17px;
+      height: 17px;
+      font-size: 0.5625rem;
     }
   }
 
