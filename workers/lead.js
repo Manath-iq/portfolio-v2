@@ -24,7 +24,7 @@
  * 6. Любой пуш в main — и форма на сайте начинает отправлять по-настоящему.
  *
  * Ничего не хранится: заявка уходит в Telegram и всё, базы для утечки нет.
- * Это ровно то, что написано в политике на сайте.
+ * Это ровно то, что написано под формой на сайте.
  */
 
 /** Домены, которым разрешено слать заявку. Чужой сайт форму не переиспользует. */
@@ -96,12 +96,6 @@ export default {
       return json({ ok: false, error: 'empty' }, 422, allow)
     }
 
-    // Согласие проверяется и здесь, а не только в форме: галочку на клиенте
-    // видно всем, а принимать персональные данные без неё нельзя.
-    if (data.consent !== true) {
-      return json({ ok: false, error: 'consent' }, 422, allow)
-    }
-
     if (!env.BOT_TOKEN || !env.CHAT_ID) {
       return json({ ok: false, error: 'config' }, 500, allow)
     }
@@ -112,7 +106,6 @@ export default {
       `<b>Связь:</b> ${esc(contact)}\n` +
       (plan ? `<b>Формат:</b> ${esc(plan)}\n` : '') +
       (task ? `<b>Задача:</b> ${esc(task)}\n` : '') +
-      '<b>Согласие на обработку ПД:</b> да\n' +
       `\n<i>${esc(page)}</i>`
 
     const res = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {

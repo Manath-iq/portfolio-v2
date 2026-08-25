@@ -33,7 +33,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
         .filter((p): p is (typeof PROJECTS)[number] => Boolean(p))
         .map((p) => `${SITE.url}${p.poster}`),
     })),
-    { url: `${SITE.url}/policy/`, lastModified: now, changeFrequency: 'yearly', priority: 0.1 },
-    { url: `${SITE.url}/oferta/`, lastModified: now, changeFrequency: 'yearly', priority: 0.1 },
   ]
 }

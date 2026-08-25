@@ -49,7 +49,7 @@ lucide-react, sonner. Эффектные компоненты из Magic UI и A
 подключены зависимостями, а переписаны под токены проекта в `src/components/ui/`.
 
 Вывод статический, потому что хостинг — обычный Apache. Отсюда
-`trailingSlash: true` (без него `/policy/` отдаст 404) и `images.unoptimized`
+`trailingSlash: true` (без него `/kazan/` отдаст 404) и `images.unoptimized`
 (в экспорте `next/image` не оптимизирует, картинки готовятся заранее в WebP).
 
 ---
@@ -58,7 +58,7 @@ lucide-react, sonner. Эффектные компоненты из Magic UI и A
 
 ```
 src/
-  app/            layout, главная, /policy/, /oferta/, sitemap, robots
+  app/            layout, главная, [slug] — города и ниши, sitemap, robots
   components/
     sections/     по секции на файл
     showcase/     карусель работ и карточка

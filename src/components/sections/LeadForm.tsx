@@ -81,9 +81,6 @@ export function LeadForm() {
       // Тариф, если человек пришёл с карточки прайса. Без него заявки
       // с трёх разных кнопок неотличимы друг от друга.
       plan: plan ?? '',
-      // Факт согласия уезжает вместе с заявкой: доказательство по 152-ФЗ должно
-      // лежать там же, где сама заявка, а не подразумеваться галочкой на клиенте.
-      consent: fd.get('consent') === 'on',
       // honeypot: живой человек это поле не видит и не заполняет
       company: String(fd.get('company') ?? ''),
       page: typeof window !== 'undefined' ? window.location.href : '',
@@ -91,14 +88,6 @@ export function LeadForm() {
 
     if (!payload.name || !payload.contact) {
       setError('Заполните имя и способ связи.')
-      return
-    }
-
-    // noValidate выключает нативную проверку целиком, вместе с required
-    // у чекбокса. Без этой ветки заявку можно отправить без согласия,
-    // и она уйдёт в Telegram неотличимой от согласованной.
-    if (!payload.consent) {
-      setError('Отметьте согласие на обработку данных — без него я не могу принять заявку.')
       return
     }
 
@@ -172,7 +161,7 @@ export function LeadForm() {
             ) : (
               <>
                 <h2 id="zayavka-h" className="t-h2 text-[clamp(1.9rem,3.4vw,2.75rem)]">
-                  Расскажи про <W>свой</W> проект
+                  Расскажите про <W>свой</W> проект
                 </h2>
                 <p className="t-body measure mt-4">
                   Отвечу в течение пары часов. Если пойму, что мой формат не подходит,
@@ -275,20 +264,14 @@ export function LeadForm() {
                     className="absolute left-[-9999px] size-px opacity-0"
                   />
 
-                  <label className="mt-1 flex cursor-pointer items-start gap-3 text-[0.875rem] text-text-2">
-                    <input
-                      type="checkbox"
-                      name="consent"
-                      required
-                      className="mt-0.5 size-[18px] shrink-0 accent-[var(--accent)]"
-                    />
-                    <span>
-                      Согласен на обработку персональных данных согласно{' '}
-                      <a href={asset("/policy/")} className="text-text underline underline-offset-4">
-                        политике конфиденциальности
-                      </a>
-                    </span>
-                  </label>
+                  {/* Галочки согласия нет: правовых страниц у сайта нет, а чекбокс,
+                      ссылающийся в никуда, — это лишний шаг и обещание документа,
+                      которого не существует. Вместо него строка о том, что реально
+                      происходит с данными: они уходят мне в Telegram и всё. */}
+                  <p className="t-micro mt-1">
+                    Заявка уходит мне в Telegram. Никому не передаю и в рассылки
+                    не добавляю.
+                  </p>
 
                   {error ? (
                     <p role="alert" className="text-[0.875rem] text-[var(--accent)]">

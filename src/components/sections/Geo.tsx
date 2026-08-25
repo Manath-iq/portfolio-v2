@@ -32,7 +32,7 @@ export function Geo() {
               <p className="t-eyebrow">домашний город</p>
               <h3 className="t-h3 mt-3 text-[1.1875rem]">{SITE.city}</h3>
               <p className="t-body mt-2 text-[0.9375rem]">
-                Здесь я и все десять работ ниже. Можно встретиться лично.
+                Здесь я и все десять работ выше. Можно встретиться лично.
               </p>
             </div>
           </Reveal>

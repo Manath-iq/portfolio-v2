@@ -179,7 +179,7 @@ export function TemplateSite({ mode, spot, numbers, onPick, touched }: Props) {
             <Swap
               className="tpl-foot"
               bad="© 2019 Все права защищены · Разработка сайта — веб-студия"
-              good="© 2026 ИП Сафин Р. Р. · сделал Максим, напрямую"
+              good="© 2026 «Потолки Сафина» · сделал Максим, напрямую"
             />
           </Spot>
         </div>

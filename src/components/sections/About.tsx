@@ -1,82 +1,86 @@
-import { existsSync } from 'node:fs'
-import path from 'node:path'
 import { ArrowRight } from 'lucide-react'
 import { CHANNEL_URL, SITE } from '@/data/site'
 import { Reveal } from '@/components/Reveal'
-import { asset } from '@/lib/asset'
-
-/** Фото автора генерировать нельзя. Нет файла — честный плейсхолдер. */
-const PHOTO = '/author.webp'
-const HAS_PHOTO = existsSync(path.join(process.cwd(), 'public', 'author.webp'))
 
 /**
  * Единственная светлая секция на сайте. Переход резкий, без градиента.
  * Свечений нет, стекла нет — здесь материал другой.
+ *
+ * Фотографии здесь нет намеренно. Раньше её место занимала колонка-плейсхолдер
+ * на 42% ширины, и весь смысл секции держался на снимке, которого нет.
+ * Теперь вес держит типографика: заголовок и кнопка стоят своей колонкой
+ * слева, текст — справа, как разворот.
+ *
+ * Три отдельных элемента сетки, а не два, из-за порядка на телефоне. В одной
+ * колонке с заголовком кнопка вставала бы перед текстом — человеку предлагают
+ * написать раньше, чем он прочитал, ради чего писать. Порядком в разметке
+ * (заголовок → текст → кнопка) телефон получает правильную последовательность,
+ * а явная раскладка по строкам и колонкам возвращает на десктопе разворот.
  */
 export function About() {
   return (
     <section className="bg-paper text-ink" aria-labelledby="kto-h">
       <div className="container-wide">
-        <div className="grid items-stretch gap-10 py-[var(--section-y)] lg:grid-cols-[42fr_58fr] lg:gap-16">
-          <Reveal className="lg:-my-[var(--section-y)]">
-            <div className="h-full min-h-[420px] overflow-hidden rounded-[var(--r-xl)] bg-black/[.06] lg:rounded-none lg:rounded-r-[var(--r-xl)]">
-              {HAS_PHOTO ? (
-                <img
-                  src={asset(PHOTO)}
-                  alt={`${SITE.name} — разработчик сайтов, ${SITE.city}`}
-                  width={1200}
-                  height={1600}
-                  loading="lazy"
-                  className="size-full object-cover"
-                />
-              ) : (
-                <div className="grid h-full min-h-[420px] place-items-center p-8 text-center">
-                  <p className="font-mono text-[0.75rem] leading-relaxed text-ink/45">
-                    здесь фото автора.
-                    <br />
-                    единственный ассет, который нельзя сгенерировать —
-                    <br />
-                    нужен настоящий снимок. положить в public/author.webp
-                  </p>
-                </div>
-              )}
-            </div>
-          </Reveal>
+        <div className="grid gap-8 py-[var(--section-y)] lg:grid-cols-[44fr_56fr] lg:grid-rows-[auto_1fr] lg:gap-x-20 lg:gap-y-10">
+          <Reveal className="lg:col-start-1 lg:row-start-1">
+            <span className="font-mono text-[0.6875rem] tracking-[0.14em] text-ink/45 uppercase">
+              кто делает
+            </span>
 
-          <Reveal delay={80} className="flex flex-col justify-center">
-            <h2 id="kto-h" className="t-h2 max-w-[16ch]">
+            {/* Кегль ниже общего t-h2: колонка здесь узкая, и полный размер
+                ломал заголовок в пять рваных строк — «собираю» повисало одно.
+                Меньший кегль даёт три ровные строки и оставляет вес тексту
+                справа, ради которого секция и стоит. */}
+            <h2
+              id="kto-h"
+              className="t-h2 mt-4 max-w-[20ch] text-[1.85rem] text-balance lg:text-[2.15rem]"
+            >
               Меня зовут {SITE.name}. Я собираю сайты{' '}
               <span className="accent-word">один</span>, из Нижнекамска.
             </h2>
+          </Reveal>
 
-            <div className="mt-8 flex max-w-[64ch] flex-col gap-5 text-[1.0625rem] leading-[1.65] text-ink/70">
+          <Reveal
+            delay={80}
+            className="flex flex-col justify-center lg:col-start-2 lg:row-span-2 lg:row-start-1"
+          >
+            <div className="flex max-w-[62ch] flex-col gap-5 text-[1.0625rem] leading-[1.65] text-ink/70">
               <p>
                 Пришёл из дизайна, поэтому для меня сайт — это не «сверстать макет», а
                 решить, что человек прочитает первым, где засомневается и что снимет это
-                сомнение.
+                сомнение. Структуру страницы я собираю из возражений ваших клиентов, а не
+                из списка блоков, который был в прошлом проекте.
+              </p>
+              <p>
+                Работаю без менеджеров и без очереди из проектов. Вы переписываетесь с тем
+                же человеком, который рисует, пишет тексты и выкладывает сайт на хостинг,
+                — поэтому правка не проходит через трёх людей, а делается в тот же день.
+                Ошибку тоже признаю я, а не «отдел разработки».
               </p>
               {/* Про канал с разборами говорим, только когда он есть. */}
               {CHANNEL_URL ? (
                 <p>
-                  Работаю без менеджеров и без очереди из проектов. Правки обсуждаются в
-                  переписке и делаются в тот же день. Каждый свой сайт я потом разбираю в
-                  Telegram-канале — можно посмотреть, как это устроено изнутри, до того
-                  как решишь работать со мной.
+                  Каждый свой сайт я потом разбираю в Telegram-канале: почему блоки стоят
+                  в этом порядке и что не сработало. Можно посмотреть, как я думаю, ещё до
+                  того, как решите работать со мной.
                 </p>
               ) : (
                 <p>
-                  Работаю без менеджеров и без очереди из проектов. Правки обсуждаются в
-                  переписке и делаются в тот же день. Написать можно сразу в Telegram —
-                  там отвечаю быстрее всего и без «оставьте заявку, вам перезвонят».
+                  Все десять работ выше — мои, ни одной чужой в портфолио. Любую можно
+                  открыть и потыкать на своём телефоне: это работающие сайты, а не
+                  картинки в рамке. Написать можно сразу в Telegram — там отвечаю быстрее
+                  всего и без «оставьте заявку, вам перезвонят».
                 </p>
               )}
             </div>
+          </Reveal>
 
+          <Reveal delay={140} className="lg:col-start-1 lg:row-start-2 lg:self-end">
             <a
               href={CHANNEL_URL ?? SITE.telegram}
               target="_blank"
               rel="noopener"
-              className="btn btn-ink mt-9 w-fit"
+              className="btn btn-ink w-fit"
             >
               {CHANNEL_URL ? 'Telegram-канал с разборами' : 'Написать в Telegram'}
               <ArrowRight size={16} strokeWidth={1.5} aria-hidden />

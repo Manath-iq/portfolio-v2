@@ -17,24 +17,6 @@ export function Footer() {
             <p className="t-body measure mt-4 text-[0.9375rem]">
               Делаю сайты для бизнеса в Нижнекамске и Татарстане.
             </p>
-            <div className="mt-5 flex flex-col gap-2 text-[0.9375rem]">
-              <a
-                href={SITE.telegram}
-                target="_blank"
-                rel="noopener"
-                className="w-fit text-text-2 transition-colors hover:text-text"
-              >
-                Telegram
-              </a>
-              <a
-                href={SITE.whatsapp}
-                target="_blank"
-                rel="noopener"
-                className="w-fit text-text-2 transition-colors hover:text-text"
-              >
-                WhatsApp
-              </a>
-            </div>
           </div>
 
           {/* Города. Единственная сквозная ссылка на посадочные — стоит на
@@ -80,28 +62,40 @@ export function Footer() {
             </ul>
           </nav>
 
+          {/* Четвёртая колонка — контакты. Правовых страниц у сайта нет,
+              поэтому вместо «документов» здесь то, чем реально пользуются.
+              Город не дублируем: он стоит строкой ниже, под линией. */}
           <div>
-            <p className="t-eyebrow">документы</p>
+            <p className="t-eyebrow">связаться</p>
             <ul className="mt-4 flex flex-col gap-2 text-[0.9375rem]">
-              <li>
-                <a
-                  href={asset('/policy/')}
-                  className="text-text-2 transition-colors hover:text-text"
-                >
-                  Политика конфиденциальности
-                </a>
-              </li>
-              <li>
-                <a
-                  href={asset('/oferta/')}
-                  className="text-text-2 transition-colors hover:text-text"
-                >
-                  Договор-оферта
-                </a>
-              </li>
               <li>
                 <a href={SITE.phoneHref} className="text-text-2 transition-colors hover:text-text">
                   {SITE.phone}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={SITE.telegram}
+                  target="_blank"
+                  rel="noopener"
+                  className="text-text-2 transition-colors hover:text-text"
+                >
+                  Telegram
+                </a>
+              </li>
+              <li>
+                <a
+                  href={SITE.whatsapp}
+                  target="_blank"
+                  rel="noopener"
+                  className="text-text-2 transition-colors hover:text-text"
+                >
+                  WhatsApp
+                </a>
+              </li>
+              <li>
+                <a href="#zayavka" className="text-text-2 transition-colors hover:text-text">
+                  Оставить заявку
                 </a>
               </li>
             </ul>
@@ -109,11 +103,8 @@ export function Footer() {
         </div>
 
         <div className="hairline-top mt-14 flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          {/* ИНН показывается, только когда он есть: строка «ИНН» без номера
-              выглядит как недоделка, а выдуманный номер — это подлог. */}
           <p className="t-micro">
-            {SITE.name} ({SITE.brand}), ИП
-            {SITE.inn ? ` · ИНН ${SITE.inn}` : ''} · {SITE.city}, {SITE.region}
+            {SITE.name} ({SITE.brand}) · {SITE.city}, {SITE.region}
           </p>
           <p className="t-micro flex items-center gap-2">
             <Monogram className="size-5" />

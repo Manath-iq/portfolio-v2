@@ -47,14 +47,10 @@ export const metadata: Metadata = {
     images: [`${SITE.url}/og.png`],
   },
   robots: { index: true, follow: true },
-  // Мета-теги появляются, только когда коды проставлены в site.ts.
-  ...(SITE.yandexVerification || SITE.googleVerification
-    ? {
-        verification: {
-          ...(SITE.yandexVerification ? { yandex: SITE.yandexVerification } : {}),
-          ...(SITE.googleVerification ? { google: SITE.googleVerification } : {}),
-        },
-      }
+  // <meta name="yandex-verification">. Появляется, только когда код проставлен
+  // в site.ts. Google подтверждён файлом в public/ — см. комментарий там же.
+  ...(SITE.yandexVerification
+    ? { verification: { yandex: SITE.yandexVerification } }
     : {}),
   icons: {
     icon: [{ url: asset('/favicon.svg'), type: 'image/svg+xml' }],
