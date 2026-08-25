@@ -46,9 +46,13 @@ export function CityJsonLd({ city }: { city: City }) {
       offers: offersFor(url),
     },
     {
+      // Городские вопросы идут первыми и в том же порядке, что на странице:
+      // разметка обязана совпадать с видимым текстом — поэтому общий гео-вопрос
+      // выключен здесь ровно так же, как в <Faq omit={['geo']}>. Без городских
+      // вопросов FAQPage был бы дословно одинаковым на всех тринадцати страницах.
       '@type': 'FAQPage',
       '@id': `${url}#faq`,
-      mainEntity: FAQ.map((f) => ({
+      mainEntity: [...city.faq, ...FAQ.filter((f) => f.id !== 'geo')].map((f) => ({
         '@type': 'Question',
         name: f.q,
         acceptedAnswer: { '@type': 'Answer', text: f.a },

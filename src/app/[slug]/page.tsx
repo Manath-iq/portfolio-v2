@@ -11,7 +11,7 @@ import { Process } from '@/components/sections/Process'
 import { Faq } from '@/components/sections/Faq'
 import { LeadForm } from '@/components/sections/LeadForm'
 import { StickyFeatures } from '@/components/sections/StickyFeatures'
-import { CityHero, CityIntro } from '@/components/city/CityHero'
+import { CityHero, CityIntro, CityNiches } from '@/components/city/CityHero'
 import { CityWorks, CityLinks } from '@/components/city/CityWorks'
 import { CityJsonLd } from '@/components/city/CityJsonLd'
 import {
@@ -45,6 +45,7 @@ export const dynamicParams = false
 
 /** На городской странице нет бегущей строки ниш, на нишевой — есть структура. */
 const CITY_NAV = [
+  { label: 'Ниши', href: '#nishi' },
   { label: 'Работы', href: '#raboty' },
   { label: 'Цены', href: '#tseny' },
   { label: 'Вопросы', href: '#voprosy' },
@@ -121,11 +122,15 @@ export default async function LandingPage({ params }: Props) {
           <>
             <CityHero city={city} />
             <CityIntro city={city} />
+            {/* Разбор ниш стоит до работ: он объясняет, по какому принципу
+                собраны карточки ниже, и человек смотрит их уже осмысленно. */}
+            <CityNiches city={city} />
             <CityWorks city={city} />
             <StickyFeatures />
             <Pricing />
             <Process />
-            <Faq />
+            {/* Гео-вопрос выключен: у города он свой, конкретнее общего. */}
+            <Faq extra={city.faq} omit={['geo']} />
             <CityLinks city={city} />
           </>
         ) : niche ? (

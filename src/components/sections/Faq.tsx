@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react'
-import { FAQ } from '@/data/faq'
+import { FAQ, type FaqItem } from '@/data/faq'
 import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 
@@ -7,8 +7,20 @@ import { Reveal } from '@/components/Reveal'
  * Аккордеон на нативных details. Не Radix: у него закрытый контент выпадает
  * из DOM, а здесь нужна разметка FAQPage и индексация ответов.
  * С отключённым JS всё раскрывается кликом ровно так же.
+ *
+ * `omit` — id общих вопросов, которые эта посадочная задаёт по-своему. Без
+ * него на /kazan/ рядом стояли «вы не из Казани — это не помешает?» и общий
+ * «вы из Нижнекамска — а если я из Казани?»: один вопрос дважды.
+ *
+ * `extra` — вопросы конкретной посадочной, они встают перед общими. Человек,
+ * пришедший по запросу с городом, первым делом спрашивает про город, а не про
+ * сроки; общие вопросы он дочитает следом. Второй секцией их выносить нельзя:
+ * два аккордеона подряд читаются как недоделка, да и FAQPage тогда пришлось бы
+ * дробить на два узла.
  */
-export function Faq() {
+export function Faq({ extra = [], omit = [] }: { extra?: FaqItem[]; omit?: string[] }) {
+  const items = [...extra, ...FAQ.filter((f) => !f.id || !omit.includes(f.id))]
+
   return (
     <section id="voprosy" className="section" aria-labelledby="voprosy-h">
       <div className="container">
@@ -17,7 +29,7 @@ export function Faq() {
         </SectionHead>
 
         <div className="mt-12 flex flex-col gap-3">
-          {FAQ.map((item, i) => (
+          {items.map((item, i) => (
             <Reveal key={item.q} delay={Math.min(i, 4) * 50}>
               <details
                 className="faq-item glass-flat overflow-hidden rounded-[var(--r-md)] transition-colors duration-[var(--dur)]"
