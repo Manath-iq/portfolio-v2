@@ -23,6 +23,13 @@ export type Block =
   /** Врезка: то, что человек должен унести, даже если читал по диагонали. */
   | { t: 'note'; text: string }
   | { t: 'table'; head: string[]; rows: string[][] }
+  /**
+   * Схема, собранная вёрсткой. Не картинка и не украшение: ставится только
+   * там, где рисунок сообщает то, чего нет в тексте. Вариантов ровно
+   * столько, сколько написано компонентов, — произвольную картинку сюда
+   * не подставить, и это намеренно.
+   */
+  | { t: 'figure'; kind: 'first-screen' }
 
 export type Article = {
   slug: string
@@ -197,6 +204,7 @@ export const ARTICLES: Article[] = [
           'Что делать дальше. Одна кнопка с понятным действием, а не три равнозначные.',
         ],
       },
+      { t: 'figure', kind: 'first-screen' },
       {
         t: 'p',
         text: 'Обратите внимание, чего в этом списке нет: истории компании, миссии, количества лет на рынке и слова «добро пожаловать». Всё это отвечает на вопросы, которых у человека в первые секунды нет.',
@@ -740,9 +748,12 @@ export function getArticle(slug: string) {
  */
 export function readMinutes(a: Article) {
   const words = a.blocks
-    .flatMap((b) =>
-      b.t === 'list' ? b.items : b.t === 'table' ? [...b.head, ...b.rows.flat()] : [b.text],
-    )
+    .flatMap((b) => {
+      if (b.t === 'list') return b.items
+      if (b.t === 'table') return [...b.head, ...b.rows.flat()]
+      if (b.t === 'figure') return []
+      return [b.text]
+    })
     .join(' ')
     .split(/\s+/)
     .filter((w) => /[а-яёa-z]/i.test(w)).length

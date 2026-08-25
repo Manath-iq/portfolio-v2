@@ -1,5 +1,6 @@
 import type { Block } from '@/data/articles'
 import { Reveal } from '@/components/Reveal'
+import { FirstScreenDiagram } from './FirstScreenDiagram'
 
 /**
  * Тело статьи.
@@ -61,6 +62,16 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
               <aside className="glass-flat max-w-[68ch] rounded-[var(--r-md)] border-hairline-2 p-5 sm:p-6">
                 <p className="text-[1.0625rem] leading-[1.6] font-medium">{b.text}</p>
               </aside>
+            </Reveal>
+          )
+        }
+
+        if (b.t === 'figure') {
+          return (
+            <Reveal key={i} delay={delay}>
+              <div className="my-2">
+                <FirstScreenDiagram />
+              </div>
             </Reveal>
           )
         }

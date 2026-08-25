@@ -3,8 +3,9 @@
  * Рендерит HTML в headless Chrome и снимает кадр — так превью в OG
  * это те же скриншоты, что и на странице, а не отдельная нарисованная картинка.
  *
- *   public/og.png            — главная
- *   public/og/<slug>.jpg     — по одной на каждую нишу
+ *   public/og.png                  — главная
+ *   public/og/<slug>.jpg           — по одной на каждую нишу
+ *   public/og/stati-<slug>.jpg     — по одной на каждую статью
  *
  * Зачем отдельные картинки нишам. Ссылку на такую страницу кидают в WhatsApp
  * и Telegram — там превью и есть первое, что видит человек. С общей картинкой
@@ -23,6 +24,7 @@ import path from 'node:path'
 
 const { NICHE_PAGES } = await import('../src/data/niche-pages.ts')
 const { PROJECTS } = await import('../src/data/projects.ts')
+const { ARTICLES, readMinutes } = await import('../src/data/articles.ts')
 
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const PORT = 9444
@@ -75,6 +77,36 @@ h1{font-size:${title.length > 70 ? 52 : 64}px;font-weight:600;line-height:1.02;l
   </div>
   <div class=row>${previews.map((s) => `<img src="${s}">`).join('')}</div>
 </div>`
+
+/**
+ * Кадр статьи. Скриншотов у неё нет и быть не может, поэтому нижний ряд
+ * превью здесь не подходит — вместо него кадр держит типографика, а
+ * заголовок центрируется по высоте, иначе внизу остаётся пустая полоса.
+ *
+ * Кегль заголовка считается от длины: у статей они длиннее нишевых
+ * («Сайт теряет заявки: 12 проверок за 20 минут» против «Сайт для кофейни»),
+ * и фиксированный размер либо разваливает кадр, либо режет строку.
+ */
+const makeArticleHtml = (title, lead, meta) => `<!doctype html><meta charset="utf-8"><style>
+@font-face{font-family:Onest;src:url(data:font/woff2;base64,${fontCyr}) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Onest;src:url(data:font/woff2;base64,${fontLat}) format('woff2')}
+@font-face{font-family:JB;src:url(data:font/woff2;base64,${monoCyr}) format('woff2')}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1200px;height:630px;background:#0A0A0C;color:#F6F5F3;font-family:Onest,sans-serif;overflow:hidden;position:relative}
+.glow{position:absolute;inset:0;background:radial-gradient(680px 420px at 50% -10%,rgba(255,77,46,.20),transparent 70%)}
+.wrap{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 72px}
+.eyebrow{font-family:JB,monospace;font-size:18px;color:#85827C;letter-spacing:.14em;text-transform:uppercase}
+h1{margin-top:26px;font-size:${title.length > 46 ? 60 : 70}px;font-weight:600;line-height:1.03;letter-spacing:-.04em;max-width:17ch}
+.lead{margin-top:26px;font-size:27px;line-height:1.45;color:#A3A19C;letter-spacing:-.011em;max-width:38ch}
+.foot{position:absolute;left:72px;right:72px;bottom:52px;display:flex;justify-content:space-between;align-items:center;padding-top:26px;border-top:1px solid rgba(255,255,255,.10);font-family:JB,monospace;font-size:19px;color:#85827C}
+</style>
+<div class=glow></div>
+<div class=wrap>
+  <p class=eyebrow>статья</p>
+  <h1>${title}</h1>
+  <p class=lead>${lead}</p>
+</div>
+<div class=foot><span>manath.site</span><span>${meta}</span></div>`
 
 // ── Chrome ────────────────────────────────────────────────────────────────
 const chrome = spawn(
@@ -151,5 +183,18 @@ for (const n of NICHE_PAGES) {
   )
 }
 
+// ── Статьи ────────────────────────────────────────────────────────────────
+for (const a of ARTICLES) {
+  // Лид режется по границе предложения — как у ниш: половина фразы в превью
+  // читается как оборванная мысль, а не как анонс.
+  const lead = a.lead.split(/(?<=\.)\s/)[0]
+
+  await shoot(
+    makeArticleHtml(a.h1, lead, `${readMinutes(a)} мин чтения`),
+    `public/og/stati-${a.slug}.jpg`,
+    'jpeg',
+  )
+}
+
 chrome.kill()
-console.log(`\nготово: главная + ${NICHE_PAGES.length} ниш`)
+console.log(`\nготово: главная + ${NICHE_PAGES.length} ниш + ${ARTICLES.length} статей`)

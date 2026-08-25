@@ -43,6 +43,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const url = `${SITE.url}/stati/${a.slug}/`
 
+  // Своя картинка на каждую статью: ссылку кидают в Telegram и WhatsApp,
+  // и с общей все шесть выглядели одинаково — «12 проверок» ничем не
+  // отличались от «сколько стоит сайт». Собирается scripts/og.mjs
+  // из заголовка и лида самой статьи, расходиться им неоткуда.
+  const image = `${SITE.url}/og/stati-${a.slug}.jpg`
+
   return {
     title: a.title,
     description: a.description,
@@ -56,13 +62,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: a.description,
       publishedTime: a.date,
       authors: [SITE.name],
-      images: [{ url: `${SITE.url}/og.png`, width: 1200, height: 630, alt: a.h1 }],
+      images: [{ url: image, width: 1200, height: 630, alt: a.h1 }],
     },
     twitter: {
       card: 'summary_large_image',
       title: a.title,
       description: a.description,
-      images: [`${SITE.url}/og.png`],
+      images: [image],
     },
     robots: { index: true, follow: true },
   }

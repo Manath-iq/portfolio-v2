@@ -46,7 +46,7 @@ export function ArticleJsonLd({ a }: { a: Article }) {
       dateModified: a.date,
       author: { '@id': `${SITE.url}/#person` },
       publisher: { '@id': `${SITE.url}/#org` },
-      image: `${SITE.url}/og.png`,
+      image: `${SITE.url}/og/stati-${a.slug}.jpg`,
     },
   ]
 
