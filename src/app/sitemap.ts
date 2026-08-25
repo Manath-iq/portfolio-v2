@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { ARTICLES } from '@/data/articles'
 import { CASES, projectOf } from '@/data/cases'
 import { CITIES } from '@/data/cities'
 import { NICHE_PAGES } from '@/data/niche-pages'
@@ -44,6 +45,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly' as const,
       priority: 0.6,
       images: [`${SITE.url}${projectOf(c).poster}`],
+    })),
+    // Статьи. changeFrequency yearly честно: их правят редко, и обещать
+    // роботу еженедельные изменения значит один раз соврать и потерять
+    // доверие к полю на всём сайте.
+    { url: `${SITE.url}/stati/`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    ...ARTICLES.map((a) => ({
+      url: `${SITE.url}/stati/${a.slug}/`,
+      lastModified: new Date(a.date),
+      changeFrequency: 'yearly' as const,
+      priority: 0.6,
     })),
   ]
 }

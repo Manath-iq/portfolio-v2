@@ -1,7 +1,8 @@
-import { ChevronDown } from 'lucide-react'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 import { FAQ, type FaqItem } from '@/data/faq'
 import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
+import { asset } from '@/lib/asset'
 
 /**
  * Аккордеон на нативных details. Не Radix: у него закрытый контент выпадает
@@ -45,7 +46,19 @@ export function Faq({ extra = [], omit = [] }: { extra?: FaqItem[]; omit?: strin
                   />
                 </summary>
                 <div className="faq-body">
-                  <p className="t-body measure px-5 pb-6 sm:px-6">{item.a}</p>
+                  <p className="t-body measure px-5 sm:px-6">{item.a}</p>
+                  {item.more ? (
+                    <p className="px-5 pt-3 sm:px-6">
+                      <a
+                        href={asset(item.more.href)}
+                        className="inline-flex items-center gap-1.5 text-[0.9375rem] text-text-2 underline underline-offset-4 transition-colors hover:text-text"
+                      >
+                        {item.more.label}
+                        <ArrowRight size={15} strokeWidth={1.5} aria-hidden />
+                      </a>
+                    </p>
+                  ) : null}
+                  <div className="pb-6" />
                 </div>
               </details>
             </Reveal>

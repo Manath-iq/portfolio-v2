@@ -106,6 +106,14 @@ export function Footer() {
                   Работы с разбором
                 </a>
               </li>
+              <li>
+                <a
+                  href={asset('/stati/')}
+                  className="text-text-2 transition-colors hover:text-text"
+                >
+                  Статьи
+                </a>
+              </li>
             </ul>
           </div>
         </div>
