@@ -98,6 +98,14 @@ export function Footer() {
                   Оставить заявку
                 </a>
               </li>
+              <li>
+                <a
+                  href={asset('/raboty/')}
+                  className="text-text-2 transition-colors hover:text-text"
+                >
+                  Работы с разбором
+                </a>
+              </li>
             </ul>
           </div>
         </div>

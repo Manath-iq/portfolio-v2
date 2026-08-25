@@ -1,7 +1,8 @@
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { City } from '@/data/cities'
 import { CITIES } from '@/data/cities'
 import { PROJECTS } from '@/data/projects'
+import { caseHrefFor } from '@/data/cases'
 import { SITE } from '@/data/site'
 import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
@@ -68,17 +69,28 @@ export function CityWorks({ city }: { city: City }) {
                   <h3 className="t-h3 text-[1.1875rem]">{p.title}</h3>
                   <p className="t-body text-[0.9375rem]">{p.desc}</p>
 
-                  {p.liveUrl ? (
-                    <a
-                      href={p.liveUrl}
-                      target="_blank"
-                      rel="noopener"
-                      className="mt-auto inline-flex w-fit items-center gap-1.5 pt-2 text-[0.9375rem] text-text-2 transition-colors hover:text-text"
-                    >
-                      {p.isDemo ? 'Открыть демо' : 'Открыть сайт'}
-                      <ArrowUpRight size={15} strokeWidth={1.5} aria-hidden />
-                    </a>
-                  ) : null}
+                  <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-[0.9375rem]">
+                    {caseHrefFor(p.id) ? (
+                      <a
+                        href={asset(caseHrefFor(p.id)!)}
+                        className="inline-flex items-center gap-1.5 text-text transition-colors hover:text-text-2"
+                      >
+                        Разбор работы
+                        <ArrowRight size={15} strokeWidth={1.5} aria-hidden />
+                      </a>
+                    ) : null}
+                    {p.liveUrl ? (
+                      <a
+                        href={p.liveUrl}
+                        target="_blank"
+                        rel="noopener"
+                        className="inline-flex items-center gap-1.5 text-text-2 transition-colors hover:text-text"
+                      >
+                        {p.isDemo ? 'демо' : 'сайт'}
+                        <ArrowUpRight size={15} strokeWidth={1.5} aria-hidden />
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
               </article>
             </Reveal>

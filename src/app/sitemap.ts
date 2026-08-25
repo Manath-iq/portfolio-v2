@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { CASES, projectOf } from '@/data/cases'
 import { CITIES } from '@/data/cities'
 import { NICHE_PAGES } from '@/data/niche-pages'
 import { PROJECTS } from '@/data/projects'
@@ -32,6 +33,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
         .map((id) => PROJECTS.find((p) => p.id === id))
         .filter((p): p is (typeof PROJECTS)[number] => Boolean(p))
         .map((p) => `${SITE.url}${p.poster}`),
+    })),
+    // Витрина разборов и сами разборы. У каждого своя картинка — скриншот
+    // работы: по запросам вида «сайт для стоматологии пример» переходы идут
+    // из Картинок, и робот должен знать, какая картинка к какой странице.
+    { url: `${SITE.url}/raboty/`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    ...CASES.map((c) => ({
+      url: `${SITE.url}/raboty/${c.slug}/`,
+      lastModified: now,
+      changeFrequency: 'yearly' as const,
+      priority: 0.6,
+      images: [`${SITE.url}${projectOf(c).poster}`],
     })),
   ]
 }

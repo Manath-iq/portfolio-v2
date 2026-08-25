@@ -1,8 +1,16 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { PROJECTS } from '@/data/projects'
+import { PROJECTS, type Project } from '@/data/projects'
+import { caseHrefFor } from '@/data/cases'
 import { ProjectCard } from './ProjectCard'
+import { asset } from '@/lib/asset'
+
+/** Разбор работы, если он есть, — уже с базовым путём для GitHub Pages. */
+const caseHref = (p: Project) => {
+  const href = caseHrefFor(p.id)
+  return href ? asset(href) : null
+}
 import { goal } from '@/lib/metrika'
 
 const AUTOPLAY_STEP = 0.0016
@@ -306,7 +314,7 @@ export function Carousel({
           if (mode === '3d') focusToCenter(i)
           else cardRefs.current[i]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
         }}
-        href={p.caseUrl ?? p.liveUrl ?? '#raboty'}
+        href={caseHref(p) ?? p.liveUrl ?? '#raboty'}
         videoRef={(el) => {
           videoRefs.current[i] = el
         }}

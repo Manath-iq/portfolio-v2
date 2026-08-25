@@ -3,11 +3,13 @@
 import { useState } from 'react'
 import { ArrowRight, ArrowUpRight, Send } from 'lucide-react'
 import { PROJECTS } from '@/data/projects'
+import { caseHrefFor } from '@/data/cases'
 import { Carousel } from '@/components/showcase/Carousel'
 import { W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { goal } from '@/lib/metrika'
 import { cn } from '@/lib/utils'
+import { asset } from '@/lib/asset'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -44,8 +46,12 @@ export function Showcase() {
           <div className="glass-flat relative order-2 min-w-0 rounded-[var(--r-lg)] p-6 pb-14 sm:p-8 sm:pb-16 lg:order-1 lg:min-h-[380px]">
             {PROJECTS.map((p, i) => {
               const on = i === active
-              const primary = p.caseUrl
-                ? { href: p.caseUrl, label: 'Разбор проекта', external: false }
+              // Основной выход — разбор работы, а не сам макет: человек на витрине
+              // ещё выбирает подрядчика, и ему полезнее увидеть, как я думаю,
+              // чем уйти на чужой домен смотреть готовое.
+              const caseHref = caseHrefFor(p.id)
+              const primary = caseHref
+                ? { href: asset(caseHref), label: 'Разбор проекта', external: false }
                 : p.liveUrl
                   ? {
                       href: p.liveUrl,
@@ -119,7 +125,7 @@ export function Showcase() {
                       </a>
                     ) : null}
 
-                    {p.caseUrl && p.liveUrl ? (
+                    {caseHref && p.liveUrl ? (
                       <a
                         href={p.liveUrl}
                         target="_blank"

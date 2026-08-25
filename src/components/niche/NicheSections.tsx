@@ -3,6 +3,7 @@ import type { NichePage } from '@/data/niche-pages'
 import { NICHE_PAGES } from '@/data/niche-pages'
 import { CITIES } from '@/data/cities'
 import { PROJECTS } from '@/data/projects'
+import { caseHrefFor } from '@/data/cases'
 import { SITE } from '@/data/site'
 import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
@@ -190,17 +191,25 @@ export function NicheWorks({ niche }: { niche: NichePage }) {
                   <h3 className="t-h3">{p.title}</h3>
                   <p className="t-body text-[0.9375rem]">{p.desc}</p>
 
-                  {p.liveUrl ? (
-                    <a
-                      href={p.liveUrl}
-                      target="_blank"
-                      rel="noopener"
-                      className="btn btn-accent mt-auto w-fit"
-                    >
-                      {p.isDemo ? 'Открыть демо' : 'Открыть сайт'}
-                      <ArrowUpRight size={16} strokeWidth={1.5} aria-hidden />
-                    </a>
-                  ) : null}
+                  <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-3 pt-2">
+                    {caseHrefFor(p.id) ? (
+                      <a href={asset(caseHrefFor(p.id)!)} className="btn btn-accent w-fit">
+                        Разбор работы
+                        <ArrowRight size={16} strokeWidth={1.5} aria-hidden />
+                      </a>
+                    ) : null}
+                    {p.liveUrl ? (
+                      <a
+                        href={p.liveUrl}
+                        target="_blank"
+                        rel="noopener"
+                        className="inline-flex items-center gap-1 text-[0.9375rem] text-text-2 transition-colors hover:text-text"
+                      >
+                        {p.isDemo ? 'Открыть демо' : 'Открыть сайт'}
+                        <ArrowUpRight size={15} strokeWidth={1.5} aria-hidden />
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
               </article>
             </Reveal>
