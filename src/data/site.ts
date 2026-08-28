@@ -80,10 +80,16 @@ export const SITE = {
 
 export const CHANNEL_URL = SITE.channel ? `https://t.me/${SITE.channel}` : null
 
+/**
+ * «Города» из меню убраны, а не потеряны: блок географии стоит на месте и
+ * ссылки на городские страницы остались в подвале. В шапке пять пунктов
+ * читаются, шесть уже пролистываются глазом, и место занял единственный
+ * пункт, который уводит с главной на отдельный раздел, — статьи.
+ */
 export const NAV = [
   { label: 'Работы', href: '#raboty' },
   { label: 'Ниши', href: '#nishi' },
+  { label: 'Статьи', href: '/stati/' },
   { label: 'Цены', href: '#tseny' },
-  { label: 'Города', href: '#goroda' },
   { label: 'Вопросы', href: '#voprosy' },
 ] as const

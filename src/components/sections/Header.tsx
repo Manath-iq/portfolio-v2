@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { MessageCircle, Phone } from 'lucide-react'
+import { ChevronDown, MessageCircle, Phone } from 'lucide-react'
 import { NAV, SITE } from '@/data/site'
 import { Monogram } from '@/components/Monogram'
 import { asset } from '@/lib/asset'
@@ -17,12 +17,24 @@ import { cn } from '@/lib/utils'
  * как только человек потянул страницу вверх, — то есть ровно тогда, когда
  * навигация ему и понадобилась.
  */
+export type NavItem = {
+  label: string
+  href: string
+  /**
+   * Вложенный список. Нужен разделу «Статьи»: из статьи в статью человек
+   * иначе ходит только через витрину, а это лишний экран на каждый переход.
+   * Раскрывается по наведению и по фокусу с клавиатуры, на мобильном пунктов
+   * меню нет вовсе — там и список не появляется.
+   */
+  items?: readonly { label: string; href: string }[]
+}
+
 type Props = {
   /**
    * Пункты меню. На городской странице раздел «Ниши» отсутствует, а пункт,
    * который никуда не прокручивает, хуже, чем его отсутствие.
    */
-  nav?: readonly { label: string; href: string }[]
+  nav?: readonly NavItem[]
   /** Куда ведёт логотип. На главной — наверх, на внутренней — на главную. */
   logoHref?: string
 }
@@ -30,6 +42,7 @@ type Props = {
 export function Header({ nav = NAV, logoHref = '#top' }: Props) {
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
+  const [open, setOpen] = useState<string | null>(null)
   const lastY = useRef(0)
 
   useEffect(() => {
@@ -80,15 +93,78 @@ export function Header({ nav = NAV, logoHref = '#top' }: Props) {
         </a>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Разделы страницы">
-          {nav.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="rounded-[var(--r-pill)] px-3 py-1.5 text-[0.9375rem] text-text-2 transition-colors duration-[var(--dur)] hover:text-text"
-            >
-              {item.label}
-            </a>
-          ))}
+          {nav.map((item) =>
+            item.items?.length ? (
+              <div
+                key={item.href}
+                className="relative"
+                onMouseEnter={() => setOpen(item.href)}
+                onMouseLeave={() => setOpen(null)}
+                onFocus={() => setOpen(item.href)}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(null)
+                }}
+              >
+                <a
+                  href={item.href}
+                  aria-expanded={open === item.href}
+                  className="flex items-center gap-1 rounded-[var(--r-pill)] px-3 py-1.5 text-[0.9375rem] text-text-2 transition-colors duration-[var(--dur)] hover:text-text"
+                >
+                  {item.label}
+                  <ChevronDown
+                    size={14}
+                    strokeWidth={1.5}
+                    aria-hidden
+                    className={cn(
+                      'transition-transform duration-[var(--dur)]',
+                      open === item.href && 'rotate-180',
+                    )}
+                  />
+                </a>
+
+                {/* Мостик до панели: между пилюлей и списком есть зазор, и без
+                    него список закрывается ровно в тот момент, когда курсор
+                    идёт к нему. */}
+                <div
+                  className={cn(
+                    'absolute top-full left-1/2 w-[min(23rem,80vw)] -translate-x-1/2 pt-3',
+                    open === item.href
+                      ? 'pointer-events-auto opacity-100'
+                      : 'pointer-events-none opacity-0',
+                    'transition-opacity duration-[var(--dur)] ease-[var(--ease)]',
+                  )}
+                >
+                  <div className="flex flex-col gap-0.5 rounded-[var(--r-md)] border border-hairline bg-[rgba(10,10,12,.97)] p-2 shadow-[0_24px_60px_-24px_rgba(0,0,0,.95)] backdrop-blur-2xl">
+                    {item.items.map((sub) => (
+                      <a
+                        key={sub.href}
+                        href={sub.href}
+                        tabIndex={open === item.href ? 0 : -1}
+                        className="rounded-[calc(var(--r-md)-12px)] px-3 py-2 text-[0.9375rem] leading-snug text-text-2 transition-colors duration-[var(--dur)] hover:bg-white/[.05] hover:text-text"
+                      >
+                        {sub.label}
+                      </a>
+                    ))}
+                    <a
+                      href={item.href}
+                      tabIndex={open === item.href ? 0 : -1}
+                      className="mt-1 border-t border-hairline px-3 pt-3 pb-1.5 text-[0.875rem] text-text-3 transition-colors duration-[var(--dur)] hover:text-text"
+                    >
+                      Все статьи →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <a
+                key={item.href}
+                href={item.href}
+                className="rounded-[var(--r-pill)] px-3 py-1.5 text-[0.9375rem] text-text-2 transition-colors duration-[var(--dur)] hover:text-text"
+              >
+                {item.label}
+              </a>
+            ),
+          )}
         </nav>
 
         {/* Мобильный: телефон и Telegram иконками, пунктов меню нет. */}

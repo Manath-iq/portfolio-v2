@@ -10,6 +10,8 @@ import { Footer } from '@/components/sections/Footer'
 import { MobileBar } from '@/components/sections/MobileBar'
 import { LeadForm } from '@/components/sections/LeadForm'
 import { ArticleBody } from '@/components/article/ArticleBody'
+import { AiSummary } from '@/components/article/AiSummary'
+import { ArticleVisual } from '@/components/article/ArticleVisual'
 import { ArticleJsonLd } from '@/components/article/ArticleJsonLd'
 import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
@@ -24,11 +26,25 @@ export function generateStaticParams() {
 
 export const dynamicParams = false
 
-const NAV = [
-  { label: 'Статьи', href: '/stati/' },
+/**
+ * В шапке у «Статей» раскрывается список: из статьи в статью человек иначе
+ * ходит только через витрину. Пять свежих, а не все десять, — длинный список
+ * в шапке перестаёт читаться и начинает пролистываться. Текущая статья из
+ * списка выброшена: ссылка на страницу, на которой стоишь, — мёртвый пункт.
+ */
+const navFor = (slug: string) => [
+  {
+    label: 'Статьи',
+    href: '/stati/',
+    items: [...ARTICLES]
+      .reverse()
+      .filter((x) => x.slug !== slug)
+      .slice(0, 5)
+      .map((x) => ({ label: x.h1, href: `/stati/${x.slug}/` })),
+  },
   { label: 'Работы', href: '/raboty/' },
   { label: 'Цены', href: '/#tseny' },
-] as const
+]
 
 const DATE_FMT = new Intl.DateTimeFormat('ru-RU', {
   day: 'numeric',
@@ -94,7 +110,7 @@ export default async function ArticleRoute({ params }: Props) {
     <div className="relative isolate">
       <ArticleJsonLd a={a} />
       <Spotlight />
-      <Header nav={NAV} logoHref={asset('/')} />
+      <Header nav={navFor(a.slug)} logoHref={asset('/')} />
 
       <main className="relative">
         <article>
@@ -136,7 +152,26 @@ export default async function ArticleRoute({ params }: Props) {
             </div>
           </header>
 
+          {/* Обложка после шапки, а не над заголовком: сверху человек ищет,
+              туда ли попал, и картинка на этом месте только отодвигает ответ.
+              Схема идёт следом и уже подкрепляет заголовок, а не спорит с ним. */}
+          {a.visual && (
+            <div className="container pt-8">
+              <Reveal delay={220}>
+                <ArticleVisual kind={a.visual} variant="cover" />
+              </Reveal>
+            </div>
+          )}
+
           <div className="container pt-10 pb-[var(--section-y)]">
+            {a.summary && (
+              <div className="mb-10">
+                <Reveal>
+                  <AiSummary points={a.summary} />
+                </Reveal>
+              </div>
+            )}
+
             <ArticleBody blocks={a.blocks} />
           </div>
         </article>

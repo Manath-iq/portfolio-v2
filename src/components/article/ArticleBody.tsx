@@ -1,6 +1,7 @@
 import type { Block } from '@/data/articles'
 import { Reveal } from '@/components/Reveal'
 import { FirstScreenDiagram } from './FirstScreenDiagram'
+import { ArticleVisual } from './ArticleVisual'
 
 /**
  * Тело статьи.
@@ -70,7 +71,11 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
           return (
             <Reveal key={i} delay={delay}>
               <div className="my-2">
-                <FirstScreenDiagram />
+                {b.kind === 'first-screen' ? (
+                  <FirstScreenDiagram />
+                ) : (
+                  <ArticleVisual kind={b.kind} />
+                )}
               </div>
             </Reveal>
           )
