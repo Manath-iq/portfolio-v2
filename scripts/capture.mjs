@@ -16,6 +16,10 @@ const OUT = path.resolve('public/works')
 const TMP = path.resolve('.capture-tmp')
 
 // poster — ретина 16:10, video — 720p 16:10
+// Бюджет на работу: постер до 200 КБ, каждое видео до 900 КБ. Сайт, который
+// в него не укладывается на общих настройках, получает свои в SITES —
+// молча выпускать файл вдвое тяжелее остальных нельзя.
+const QUALITY = { webp: 82, vp9: 38, h264: 30 }
 const POSTER = { w: 1600, h: 1000, dsf: 2 }
 const FRAME = { w: 1152, h: 720, dsf: 1 }
 const FPS = 25
@@ -33,6 +37,11 @@ const SITES = [
   { id: 'alice-tour', url: 'https://manath-iq.github.io/alice_tour_template/' },
   { id: 'stary-ambar', url: 'https://manath-iq.github.io/old-ambar-site/' },
   { id: 'massage-nk', url: 'https://massage-niznek.ru/' },
+  // Единственный сайт со своими настройками сжатия: 12 238 px сплошной
+  // фотографии и заливок в лоб. На общих 82/38/30 постер весил 254 КБ,
+  // а mp4 — 1,02 МБ, то есть оба мимо бюджета.
+  { id: 'dobrovet', url: 'https://manath-iq.github.io/dobrovet/',
+    quality: { webp: 74, vp9: 38, h264: 32 } },
 ]
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -186,17 +195,18 @@ async function capture(site) {
 async function encode(site) {
   const dir = path.join(TMP, site.id)
   const glob = path.join(dir, '%04d.jpg')
+  const q = { ...QUALITY, ...site.quality }
 
   await sh('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', glob,
-    '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '38', '-row-mt', '1', '-pix_fmt', 'yuv420p',
+    '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', String(q.vp9), '-row-mt', '1', '-pix_fmt', 'yuv420p',
     '-an', path.join(OUT, `${site.id}.webm`)])
 
   await sh('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', glob,
-    '-c:v', 'libx264', '-crf', '30', '-preset', 'slow', '-profile:v', 'main',
+    '-c:v', 'libx264', '-crf', String(q.h264), '-preset', 'slow', '-profile:v', 'main',
     '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', path.join(OUT, `${site.id}.mp4`)])
 
   // постер: ретина ×2 -> webp
-  await sh('cwebp', ['-q', '82', '-m', '6', '-quiet',
+  await sh('cwebp', ['-q', String(q.webp), '-m', '6', '-quiet',
     path.join(TMP, `${site.id}.png`), '-o', path.join(OUT, `${site.id}.webp`)])
 }
 

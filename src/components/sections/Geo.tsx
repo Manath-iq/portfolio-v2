@@ -1,9 +1,11 @@
 import { ArrowRight } from 'lucide-react'
 import { CITIES } from '@/data/cities'
+import { PROJECTS } from '@/data/projects'
 import { SITE } from '@/data/site'
 import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { asset } from '@/lib/asset'
+import { numeral } from '@/lib/numeral'
 
 /**
  * География. Единственная точка входа на городские страницы с главной —
@@ -32,7 +34,7 @@ export function Geo() {
               <p className="t-eyebrow">домашний город</p>
               <h3 className="t-h3 mt-3 text-[1.1875rem]">{SITE.city}</h3>
               <p className="t-body mt-2 text-[0.9375rem]">
-                Здесь я и все десять работ выше. Можно встретиться лично.
+                Здесь я и все {numeral(PROJECTS.length)} работ выше. Можно встретиться лично.
               </p>
             </div>
           </Reveal>

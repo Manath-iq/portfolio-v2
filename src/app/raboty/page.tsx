@@ -11,17 +11,21 @@ import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { Spotlight } from '@/components/ui/Spotlight'
 import { asset } from '@/lib/asset'
+import { cap, numeral, numeralOf } from '@/lib/numeral'
 
 /**
  * Витрина разборов.
  *
  * Нужна не ради поискового трафика — по запросу «работы» никто не ищет.
- * Нужна как настоящий родитель для десяти страниц: без неё хлебные крошки
+ * Нужна как настоящий родитель для страниц разборов: без неё хлебные крошки
  * врали бы, а разборы висели бы на одних только карточках витрины.
  */
+/** Сколько работ из витрины — демо-концепты, а не клиентские заказы. */
+const DEMOS = CASES.filter((c) => projectOf(c).isDemo).length
+
 const TITLE = `Работы с разбором — сайты для бизнеса | ${SITE.brand}`
 const DESCRIPTION =
-  'Десять сайтов и разбор каждого: под какую задачу собрана структура, почему блоки стоят в таком порядке и что убрано намеренно.'
+  `${cap(numeral(CASES.length))} сайтов и разбор каждого: под какую задачу собрана структура, почему блоки стоят в таком порядке и что убрано намеренно.`
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -69,14 +73,14 @@ export default function CaseIndex() {
             </Reveal>
 
             <SectionHead eyebrow="работы" id="raboty-h" className="mt-6">
-              Десять сайтов. У каждого — <W>разбор</W>.
+              {cap(numeral(CASES.length))} сайтов. У каждого — <W>разбор</W>.
             </SectionHead>
 
             <p className="t-body measure mt-8">
               Не галерея картинок: у каждой работы своя страница с тем, под какую задачу
               собрана структура, почему блоки идут в таком порядке и что убрано намеренно.
-              Девять из десяти — демо-концепты, и это написано на каждой странице прямо,
-              а не мелким шрифтом внизу.
+              {cap(numeral(DEMOS))} из {numeralOf(CASES.length)} — демо-концепты, и это написано
+              на каждой странице прямо, а не мелким шрифтом внизу.
             </p>
           </div>
         </section>

@@ -1,5 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import { CHANNEL_URL, SITE } from '@/data/site'
+import { PROJECTS } from '@/data/projects'
+import { numeral } from '@/lib/numeral'
 import { Reveal } from '@/components/Reveal'
 
 /**
@@ -66,7 +68,7 @@ export function About() {
                 </p>
               ) : (
                 <p>
-                  Все десять работ выше — мои, ни одной чужой в портфолио. Любую можно
+                  Все {numeral(PROJECTS.length)} работ выше — мои, ни одной чужой в портфолио. Любую можно
                   открыть и потыкать на своём телефоне: это работающие сайты, а не
                   картинки в рамке. Написать можно сразу в Telegram — там отвечаю быстрее
                   всего и без «оставьте заявку, вам перезвонят».

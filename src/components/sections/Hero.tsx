@@ -1,8 +1,10 @@
 import { ArrowRight } from 'lucide-react'
 import { CHANNEL_URL } from '@/data/site'
+import { PROJECTS } from '@/data/projects'
 import { W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { LiveWindow } from '@/components/LiveWindow'
+import { cap, numeral } from '@/lib/numeral'
 
 const FACTS = [
   'от 45 000 ₽',
@@ -39,7 +41,7 @@ export function Hero() {
             <span className="shiny-text text-balance">
               {CHANNEL_URL
                 ? 'Новый разбор в Telegram-канале'
-                : 'Десять работ ниже — можно открыть любую'}
+                : `${cap(numeral(PROJECTS.length))} работ ниже — можно открыть любую`}
             </span>
             <ArrowRight
               size={15}

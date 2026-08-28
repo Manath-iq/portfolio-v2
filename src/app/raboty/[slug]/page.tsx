@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import type { CasePage } from '@/data/cases'
 import { CASES, getCase, projectOf } from '@/data/cases'
 import { SITE } from '@/data/site'
 import { Header } from '@/components/sections/Header'
@@ -13,6 +14,7 @@ import {
   CaseTask,
   CaseDecisions,
   CaseOmitted,
+  CaseLaunch,
   CaseLinks,
 } from '@/components/case/CaseSections'
 import { CaseJsonLd } from '@/components/case/CaseJsonLd'
@@ -34,12 +36,17 @@ export function generateStaticParams() {
 
 export const dynamicParams = false
 
-/** Своей секции FAQ здесь нет, поэтому и пункта «Вопросы» в меню нет. */
-const CASE_NAV = [
+/**
+ * Своей секции FAQ здесь нет, поэтому и пункта «Вопросы» в меню нет.
+ * Пункт «Запуск» появляется только там, где есть сама секция: меню,
+ * ведущее в пустоту, хуже меню на пункт короче.
+ */
+const caseNav = (c: CasePage) => [
   { label: 'Решения', href: '#resheniya' },
+  ...(c.launch?.length ? [{ label: 'Запуск', href: '#zapusk' }] : []),
   { label: 'Цены', href: '#tseny' },
   { label: 'Работы', href: '/raboty/' },
-] as const
+]
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
@@ -85,13 +92,17 @@ export default async function CaseRoute({ params }: Props) {
     <div className="relative isolate">
       <CaseJsonLd c={c} />
       <Spotlight />
-      <Header nav={CASE_NAV} logoHref={asset('/')} />
+      <Header nav={caseNav(c)} logoHref={asset('/')} />
 
       <main className="relative">
         <CaseHero c={c} />
         <CaseTask c={c} />
         <CaseDecisions c={c} />
         <CaseOmitted c={c} />
+        {/* Список для запуска стоит перед прайсом: сначала человек видит,
+            сколько до живого сайта осталось, и только потом — сколько это
+            стоит. В обратном порядке цена читается как цена за неизвестность. */}
+        <CaseLaunch c={c} />
         {/* Прайс и порядок работы — то, что спрашивают сразу после «а мне
             так же можно». Витрина работ идёт после них, чтобы человек уходил
             дальше по сайту, а не с сайта. */}

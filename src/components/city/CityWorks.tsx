@@ -7,11 +7,12 @@ import { SITE } from '@/data/site'
 import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { asset } from '@/lib/asset'
+import { cap, numeral } from '@/lib/numeral'
 
 /**
  * Работы на городской странице — статичная сетка, без карусели.
  * Карусель на главной живёт ради первого впечатления; здесь человек пришёл
- * из поиска и ему нужнее увидеть все десять сразу, чем листать.
+ * из поиска и ему нужнее увидеть все сразу, чем листать.
  * Первыми идут те, что ближе к городу по нише или по географии.
  */
 export function CityWorks({ city }: { city: City }) {
@@ -39,7 +40,7 @@ export function CityWorks({ city }: { city: City }) {
 
       <div className="container-wide relative">
         <SectionHead eyebrow="работы" id="raboty-h">
-          Десять сайтов. Ни один — под <W>шаблон</W>.
+          {cap(numeral(PROJECTS.length))} сайтов. Ни один — под <W>шаблон</W>.
         </SectionHead>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:mt-14 lg:grid-cols-3">

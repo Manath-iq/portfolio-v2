@@ -2,16 +2,20 @@ import { ArrowUpRight } from 'lucide-react'
 import type { CasePage } from '@/data/cases'
 import { CASES, projectOf } from '@/data/cases'
 import { NICHE_PAGES } from '@/data/niche-pages'
+import { SITE } from '@/data/site'
 import { SectionHead, W } from '@/components/SectionHead'
 import { Reveal } from '@/components/Reveal'
 import { asset } from '@/lib/asset'
+import { numeral } from '@/lib/numeral'
 
 /**
  * Первый экран разбора.
  *
- * Пилюля «демо-концепт» стоит здесь, а не в подвале страницы: девять работ
- * из десяти — не клиентские заказы, и человек должен узнать это до того, как
+ * Подпись «демо-концепт» стоит здесь, а не в подвале страницы: почти все
+ * работы — не клиентские заказы, и человек должен узнать это до того, как
  * прочитает разбор, а не после. Спрятать это вниз было бы выгоднее и нечестно.
+ * Работа, собранная под конкретный названный бизнес, подписывается своей
+ * строкой из statusLabel: «демо-концепт» для неё — неточность в обе стороны.
  */
 export function CaseHero({ c }: { c: CasePage }) {
   const p = projectOf(c)
@@ -52,7 +56,7 @@ export function CaseHero({ c }: { c: CasePage }) {
             <span>{p.city.toLowerCase()}</span>
             <span aria-hidden>·</span>
             <span className={p.isDemo ? undefined : 'font-medium text-text-2'}>
-              {p.isDemo ? 'демо-концепт' : 'работающий сайт клиента'}
+              {p.statusLabel ?? (p.isDemo ? 'демо-концепт' : 'работающий сайт клиента')}
             </span>
           </p>
         </Reveal>
@@ -180,6 +184,62 @@ export function CaseOmitted({ c }: { c: CasePage }) {
 }
 
 /**
+ * Чего не хватает, чтобы страница стала живым сайтом.
+ *
+ * Секция есть только у работ, собранных под конкретный названный бизнес,
+ * который их ещё не купил. Она делает две вещи сразу: честно называет, что
+ * на демо стоит вместо настоящих данных, и превращает разбор в понятный
+ * следующий шаг — вместо «напишите мне» человек видит короткий список того,
+ * что может собрать сам, и понимает, сколько до запуска осталось.
+ */
+export function CaseLaunch({ c }: { c: CasePage }) {
+  if (!c.launch?.length) return null
+
+  return (
+    <section id="zapusk" className="section pt-0" aria-labelledby="zapusk-h">
+      <div className="container">
+        <SectionHead eyebrow="что нужно для запуска" id="zapusk-h">
+          Осталось <W>собрать данные</W>
+        </SectionHead>
+
+        <p className="t-body measure mt-8">
+          Страница готова и работает — её можно открыть с телефона прямо сейчас. Не
+          готовы только те данные, которые есть лишь у самого бизнеса. Пока их нет, на
+          их местах стоят пометки прямо в коде, а сайт закрыт от индексации: демо
+          с выдуманным прайсом в поиске навредило бы сильнее, чем отсутствие сайта.
+        </p>
+
+        <ol className="mt-10 flex flex-col gap-3">
+          {c.launch.map((l, i) => (
+            <Reveal key={l.n} delay={Math.min(i, 5) * 50}>
+              <li className="glass-flat flex gap-4 rounded-[var(--r-md)] p-5 sm:gap-6 sm:p-6">
+                <span className="t-micro shrink-0 pt-1 tabular-nums">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div className="min-w-0">
+                  <h3 className="t-h3 text-[1.0625rem] sm:text-[1.1875rem]">{l.n}</h3>
+                  <p className="t-body mt-2 text-[0.9375rem]">{l.why}</p>
+                </div>
+              </li>
+            </Reveal>
+          ))}
+        </ol>
+
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <a href="#zayavka" className="btn btn-accent">
+            Обсудить запуск
+          </a>
+          <a href={SITE.telegram} target="_blank" rel="noopener" className="btn btn-glass">
+            Написать в Telegram
+            <ArrowUpRight size={16} strokeWidth={1.5} aria-hidden />
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/**
  * Перелинковка: нишевая страница этой работы и два соседних разбора.
  * Соседей берём по кругу от текущего — так каждый разбор получает входящие
  * ссылки, и ни один не остаётся тупиком в конце списка.
@@ -231,7 +291,7 @@ export function CaseLinks({ c }: { c: CasePage }) {
 
         <div className="mt-8">
           <a href={asset('/raboty/')} className="btn btn-glass">
-            Все десять работ
+            Все {numeral(CASES.length)} работ
           </a>
         </div>
       </div>

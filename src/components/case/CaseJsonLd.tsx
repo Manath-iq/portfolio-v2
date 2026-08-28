@@ -2,14 +2,15 @@ import type { CasePage } from '@/data/cases'
 import { projectOf } from '@/data/cases'
 import { SITE } from '@/data/site'
 import { baseGraph, ld } from '@/lib/schema'
+import { cap, numeral } from '@/lib/numeral'
 
 /**
  * Микроразметка разбора работы.
  *
  * Тип узла — CreativeWork, а не Article: это описание сделанной работы,
  * а не статья. Offer здесь нет намеренно — на этой странице ничего не продаётся
- * по конкретной цене, продаётся она на прайсе, и дублировать офферы на десяти
- * страницах значит десять раз заявить один и тот же товар.
+ * по конкретной цене, продаётся она на прайсе, и дублировать офферы на каждом
+ * разборе значит десять раз заявить один и тот же товар.
  *
  * Для демо-концептов не выставляется ни заказчик, ни дата запуска: заказчика
  * не существует, а придуманный `client` в разметке — это подлог, который
@@ -68,7 +69,7 @@ export function CaseJsonLd({ c }: { c: CasePage }) {
   )
 }
 
-/** Разметка витрины /raboty/: список из десяти разборов. */
+/** Разметка витрины /raboty/: список всех разборов. */
 export function CaseIndexJsonLd({ cases }: { cases: CasePage[] }) {
   const url = `${SITE.url}/raboty/`
 
@@ -80,7 +81,7 @@ export function CaseIndexJsonLd({ cases }: { cases: CasePage[] }) {
       url,
       name: `Работы — ${SITE.brand}`,
       description:
-        'Десять сайтов с разбором: под какую задачу собрана структура и почему блоки стоят в таком порядке.',
+        `${cap(numeral(cases.length))} сайтов с разбором: под какую задачу собрана структура и почему блоки стоят в таком порядке.`,
       inLanguage: 'ru-RU',
       isPartOf: { '@id': `${SITE.url}/#website` },
       breadcrumb: { '@id': `${url}#breadcrumbs` },
