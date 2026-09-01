@@ -10,7 +10,9 @@ import { mkdir, writeFile, rm, readdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 
-const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+// Путь к Chrome по умолчанию маковский. На другой машине он передаётся
+// окружением, а не правится в файле: CHROME=/путь/к/chromium node scripts/capture.mjs
+const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const PORT = 9222
 const OUT = path.resolve('public/works')
 const TMP = path.resolve('.capture-tmp')
@@ -37,6 +39,7 @@ const SITES = [
   { id: 'alice-tour', url: 'https://manath-iq.github.io/alice_tour_template/' },
   { id: 'stary-ambar', url: 'https://manath-iq.github.io/old-ambar-site/' },
   { id: 'massage-nk', url: 'https://massage-niznek.ru/' },
+  { id: 'grand-house', url: 'https://grandhouse.manath.site/' },
   // Единственный сайт со своими настройками сжатия: 12 238 px сплошной
   // фотографии и заливок в лоб. На общих 82/38/30 постер весил 254 КБ,
   // а mp4 — 1,02 МБ, то есть оба мимо бюджета.
