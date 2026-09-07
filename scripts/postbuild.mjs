@@ -2,7 +2,7 @@
  * После next build: докладывает в out/ то, что статический экспорт не переносит,
  * и печатает вес первого экрана, чтобы бюджет из части 7 был виден сразу.
  */
-import { cp, stat, readdir, access, readFile } from 'node:fs/promises'
+import { cp, rm, stat, readdir, access, readFile } from 'node:fs/promises'
 import { gzipSync } from 'node:zlib'
 import path from 'node:path'
 
@@ -25,6 +25,27 @@ for (const f of ['.htaccess']) {
     console.log(`↳ ${f} перенесён в out/`)
   }
 }
+
+/**
+ * Страница 404.
+ *
+ * Своей not-found.tsx в проекте нет намеренно: рукописная public/404.html
+ * весит 931 байт, не тянет ни React, ни шрифты — для страницы, на которую
+ * попадают по ошибке, это ровно то, что нужно. Но статический экспорт всё
+ * равно кладёт в out/ собственную заглушку Next и затирает ею рукописную,
+ * поэтому её возвращаем на место после сборки, а не до.
+ *
+ * Заодно сносим out/404/ — при trailingSlash Next делает из заглушки
+ * обычную страницу, и хостинг отдаёт /404/ с кодом 200. Внутри два <title>,
+ * `robots: index, follow` рядом с noindex и canonical на главную: soft-404,
+ * который канонизируется в самую важную страницу сайта. Проверено на боевом
+ * 07.09.2026 — отдавалось именно так.
+ */
+if (await exists(path.join(PUB, '404.html'))) {
+  await cp(path.join(PUB, '404.html'), path.join(OUT, '404.html'))
+  console.log('↳ 404.html восстановлена из public/ (экспорт затирает её своей)')
+}
+await rm(path.join(OUT, '404'), { recursive: true, force: true })
 
 const size = async (p) => (await exists(p) ? (await stat(p)).size : 0)
 /** Сколько реально уедет по проводу: текст на хостинге отдаётся сжатым. */

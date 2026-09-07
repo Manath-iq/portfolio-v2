@@ -19,7 +19,12 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: `${SITE.url}/stati/` },
+  alternates: {
+    canonical: `${SITE.url}/stati/`,
+    // Ссылка на фид в <head>: читалки и агрегаторы ищут её именно здесь,
+    // а не угадывают адрес. Сам фид — src/app/stati/rss.xml/route.ts.
+    types: { 'application/rss+xml': `${SITE.url}/stati/rss.xml` },
+  },
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
@@ -63,7 +68,7 @@ export default function ArticleIndex() {
               </nav>
             </Reveal>
 
-            <SectionHead eyebrow="статьи" id="stati-h" className="mt-6">
+            <SectionHead as="h1" eyebrow="статьи" id="stati-h" className="mt-6">
               Вопросы, которые задают <W>до</W> заказа
             </SectionHead>
 

@@ -72,7 +72,7 @@ export default function CaseIndex() {
               </nav>
             </Reveal>
 
-            <SectionHead eyebrow="работы" id="raboty-h" className="mt-6">
+            <SectionHead as="h1" eyebrow="работы" id="raboty-h" className="mt-6">
               {cap(numeral(CASES.length))} сайтов. У каждого — <W>разбор</W>.
             </SectionHead>
 

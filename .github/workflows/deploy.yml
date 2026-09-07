@@ -9,6 +9,9 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  # download-artifact ходит за артефактом через API — без этого шаг IndexNow
+  # упадёт на скачивании, потому что permissions здесь задан явно.
+  actions: read
 
 # Параллельные выкладки не нужны: важна последняя.
 concurrency:
@@ -47,6 +50,18 @@ jobs:
         # без этого файла Jekyll выкинет каталог _next целиком
         run: touch out/.nojekyll
 
+      # Считаем здесь, а не после деплоя: сравнение идёт со sitemap, который
+      # сейчас лежит на домене, то есть с результатом прошлой выкладки. После
+      # деплоя там будет уже новый файл и сравнивать станет не с чем.
+      - name: Посчитать, что изменилось для IndexNow
+        run: node scripts/indexnow.mjs --plan indexnow-urls.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: indexnow-urls
+          path: indexnow-urls.json
+          retention-days: 1
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
@@ -60,3 +75,18 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      # Робота зовём только теперь, когда страницы уже отдаются. Позвать его
+      # на адрес, который ещё 404, хуже, чем не звать вовсе.
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: indexnow-urls
+
+      # Сайт уже выложен: если Яндекс не ответил, выкладка от этого не сломана.
+      - name: Сообщить Яндексу об изменившихся адресах
+        continue-on-error: true
+        run: node scripts/indexnow.mjs --submit indexnow-urls.json
