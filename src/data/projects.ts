@@ -84,7 +84,7 @@ export const PROJECTS: Project[] = [
     inHero: false,
     isDemo: true,
     statusLabel: 'собран под клинику · ещё не запущен',
-    domain: 'dobrovet',
+    domain: 'dobrovet.manath.site',
     alt: 'Сайт ветеринарной клиники в Нижнекамске — главная страница',
   },
   {
@@ -101,7 +101,7 @@ export const PROJECTS: Project[] = [
     video: '/works/uzi-ayaz.webm',
     inHero: true,
     isDemo: true,
-    domain: 'clinic-template',
+    domain: 'clinic-template.manath.site',
     alt: 'Лендинг центра ультразвуковой диагностики в Нижнекамске — главная страница',
   },
   {
@@ -118,7 +118,7 @@ export const PROJECTS: Project[] = [
     video: '/works/stomatologiya-ulybka.webm',
     inHero: true,
     isDemo: true,
-    domain: 'stomatologya-template',
+    domain: 'stomatologya-template.manath.site',
     alt: 'Лендинг стоматологической клиники в Нижнекамске — имплантация зубов',
   },
   {
@@ -135,7 +135,7 @@ export const PROJECTS: Project[] = [
     video: '/works/sportpit-sostav.webm',
     inHero: true,
     isDemo: true,
-    domain: 'sports-nutrition',
+    domain: 'sports-nutrition.manath.site',
     alt: 'Лендинг магазина спортивного питания в Нижнекамске — главная страница',
   },
   {
@@ -152,7 +152,7 @@ export const PROJECTS: Project[] = [
     video: '/works/dom-proekt.webm',
     inHero: false,
     isDemo: true,
-    domain: 'stroika-template',
+    domain: 'stroika-template.manath.site',
     alt: 'Лендинг строительной компании в Татарстане — каркасные дома под ключ',
   },
   {
@@ -169,7 +169,7 @@ export const PROJECTS: Project[] = [
     video: '/works/kuhni-mera.webm',
     inHero: false,
     isDemo: true,
-    domain: 'kitchen-template',
+    domain: 'kitchen-template.manath.site',
     alt: 'Лендинг производителя кухонь на заказ в Казани — главная страница',
   },
   {
@@ -186,7 +186,7 @@ export const PROJECTS: Project[] = [
     video: '/works/brekety.webm',
     inHero: false,
     isDemo: true,
-    domain: 'braces-stomat',
+    domain: 'braces-stomat.manath.site',
     alt: 'Лендинг по установке брекетов — ортодонтия, главная страница',
   },
   {
@@ -203,7 +203,7 @@ export const PROJECTS: Project[] = [
     video: '/works/baobab.webm',
     inHero: false,
     isDemo: true,
-    domain: 'baobab-template',
+    domain: 'baobab-template.manath.site',
     alt: 'Лендинг мастерской шоколада и кофейни в Нижнекамске — главная страница',
   },
   {
@@ -220,7 +220,7 @@ export const PROJECTS: Project[] = [
     video: '/works/stary-ambar.webm',
     inHero: false,
     isDemo: true,
-    domain: 'old-ambar-site',
+    domain: 'old-ambar-site.manath.site',
     alt: 'Лендинг ресторана в Нижнекамске — меню, банкеты, бронь стола',
   },
   {
@@ -237,8 +237,25 @@ export const PROJECTS: Project[] = [
     video: '/works/alice-tour.webm',
     inHero: false,
     isDemo: true,
-    domain: 'alice-tour-template',
+    domain: 'alice-tour-template.manath.site',
     alt: 'Лендинг турагентства — подбор путешествий, главная страница',
+  },
+  {
+    id: 'rovno',
+    title: 'РОВНО — ремонт квартир под ключ',
+    niche: 'Ремонт квартир',
+    nicheSlug: 'sayt-dlya-remonta-kvartir',
+    city: 'Казань',
+    desc: 'Ремонт под ключ в Казани, Челнах и Нижнекамске. Калькулятор считает вилку по девяти статьям без звонка, пять уровней отделки разложены на «что входит» и «чего нет», а шесть этапов закрываются актом и оплачиваются по факту.',
+    metric: null,
+    tgPost: null,
+    liveUrl: 'https://rovno.manath.site/',
+    poster: '/works/rovno.webp',
+    video: '/works/rovno.webm',
+    inHero: false,
+    isDemo: true,
+    domain: 'rovno.manath.site',
+    alt: 'Лендинг ремонта квартир под ключ в Казани — главная страница',
   },
 ]
 

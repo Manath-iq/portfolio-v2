@@ -45,6 +45,10 @@ const SITES = [
   // а mp4 — 1,02 МБ, то есть оба мимо бюджета.
   { id: 'dobrovet', url: 'https://manath-iq.github.io/dobrovet/',
     quality: { webp: 74, vp9: 38, h264: 32 } },
+  // Самая длинная и насыщенная цифрами страница из всех: на общих 82/38/30
+  // mp4 выходил за бюджет в 900 КБ.
+  { id: 'rovno', url: 'https://rovno.manath.site/',
+    quality: { h264: 33 } },
 ]
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
