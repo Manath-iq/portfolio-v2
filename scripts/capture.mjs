@@ -49,6 +49,11 @@ const SITES = [
   // mp4 выходил за бюджет в 900 КБ.
   { id: 'rovno', url: 'https://rovno.manath.site/',
     quality: { h264: 33 } },
+  // Первые три экрана — сплошная фотография: портрет врача на тёмной плашке
+  // и веер из шести снимков. На общих 30 mp4 выходил на 895 КБ, впритык
+  // к бюджету в 900 КБ.
+  { id: 'dentis', url: 'https://manath-iq.github.io/stomatologiya/',
+    quality: { h264: 33 } },
 ]
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
