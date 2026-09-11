@@ -2,7 +2,12 @@ export type Project = {
   id: string
   title: string
   niche: string
-  nicheSlug: string
+  /**
+   * Нишевая страница работы. null — ниша есть, а страницы под неё нет:
+   * заводить её ради одной работы рано, а врать слагом, которого нет
+   * в niche-pages.ts, нельзя — перелинковка молча ведёт в 404.
+   */
+  nicheSlug: string | null
   city: string
   desc: string
   /** Только проверяемый факт. Придуманных цифр здесь быть не должно. */
@@ -273,6 +278,23 @@ export const PROJECTS: Project[] = [
     isDemo: true,
     domain: 'manath-iq.github.io/stomatologiya',
     alt: 'Лендинг стоматологической клиники в Казани — имплантация и эстетическая стоматология, главная страница',
+  },
+  {
+    id: 'reglament',
+    title: 'СТО «Регламент» — автосервис и детейлинг',
+    niche: 'Автосервисы и детейлинг',
+    nicheSlug: null,
+    city: 'Казань',
+    desc: 'Сервис и детейлинг под одной вывеской, где страница набрана как заказ-наряд: на первом экране не слово «честно», а заполненный бланк с позициями, сроком и итогом. Дальше вилка с единицей измерения, калькулятор без кнопки «Рассчитать» и четыре шага, у каждого — свой документ.',
+    metric: null,
+    tgPost: null,
+    liveUrl: 'http://auto-detailing.manath.site/',
+    poster: '/works/reglament.webp',
+    video: '/works/reglament.webm',
+    inHero: false,
+    isDemo: true,
+    domain: 'auto-detailing.manath.site',
+    alt: 'Лендинг автосервиса и детейлинга в Казани — диагностика, ремонт и уход за кузовом, главная страница',
   },
 ]
 

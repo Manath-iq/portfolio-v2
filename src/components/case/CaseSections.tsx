@@ -243,13 +243,17 @@ export function CaseLaunch({ c }: { c: CasePage }) {
  * Перелинковка: нишевая страница этой работы и два соседних разбора.
  * Соседей берём по кругу от текущего — так каждый разбор получает входящие
  * ссылки, и ни один не остаётся тупиком в конце списка.
+ *
+ * У работы из ниши без своей страницы карточек всё равно три: недостающую
+ * добирают третьим соседом. Две карточки в сетке на три колонки читаются
+ * как обрыв, а не как решение.
  */
 export function CaseLinks({ c }: { c: CasePage }) {
   const p = projectOf(c)
   const niche = NICHE_PAGES.find((n) => n.slug === p.nicheSlug) ?? null
 
   const i = CASES.findIndex((x) => x.slug === c.slug)
-  const neighbours = [CASES[(i + 1) % CASES.length], CASES[(i + 2) % CASES.length]]
+  const neighbours = Array.from({ length: niche ? 2 : 3 }, (_, k) => CASES[(i + k + 1) % CASES.length])
 
   return (
     <section className="section pt-0" aria-labelledby="dalshe-h">

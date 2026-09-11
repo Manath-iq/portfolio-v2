@@ -54,6 +54,11 @@ const SITES = [
   // к бюджету в 900 КБ.
   { id: 'dentis', url: 'https://manath-iq.github.io/stomatologiya/',
     quality: { h264: 33 } },
+  // Страница на 11 435 px и вся построена на плашках заказ-наряда с мелким
+  // моноширинным текстом и тонкими линиями — h264 их размывает первыми.
+  // На общих 30 mp4 весил 1,03 МБ, мимо бюджета в 900 КБ.
+  { id: 'reglament', url: 'http://auto-detailing.manath.site/',
+    quality: { h264: 34 } },
 ]
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
